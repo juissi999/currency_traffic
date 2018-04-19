@@ -18,18 +18,21 @@
     }
 </style>
 <head>
-    <title>My moneyflow</title>
+    <title>Currency traffic</title>
 </head>
 <body>
 
     <div id="wrapper">
         <div id="title">
-            Add a new purchase or money input
+            Add a new purchase
         </div>
         <div id="body" align=center>
              <form name="input_sheet" method="post">
             Purchase: <input type="text" name="purchase" value="food">
             Price: <input type="text" name="price" value="5">
+            Type:
+            <select id="selection">
+            </select>
             <input id="commit-button" type="button" value="Commit">
             </form>
             <p id="spending"></p>
@@ -41,19 +44,22 @@
 <script type="text/javascript">
 (function () { //closure
   // code
-  
-    var data = loadData("data.json");
+
+//    var data = loadData("data.json");
     var data = [];
+    var options = ["food", "leisure", "item", "rent", "insurance"];
     
-    //document.getElementById("data").innerHTML = data;
+    document.getElementById("data").innerHTML = data;
     printPurchases();
+    addSelections(options);
     
     $('#commit-button').click(function validateForm() {
         purchase = document.forms["input_sheet"]["purchase"].value;
         price = parseInt(document.forms["input_sheet"]["price"].value);
-
+        selection = document.getElementById("selection")["value"];
+        
         if (purchase.length > 0) {
-            data.push([purchase, price]);
+            data.push([purchase, price, selection]);
         }
         printPurchases();
         document.forms["input_sheet"]["purchase"].value = "";
@@ -68,13 +74,13 @@
     }
     
     function printPurchases(){
-        // for (i=0;i<data.length;i++){
         var arraystr = "Recent purchases:<br>";
-        //for (i=0;i<data.length;i++){
         for (i=data.length-1;i>-1;i--){
             arraystr += data[i][0];
             arraystr += ", "
             arraystr += data[i][1];
+            arraystr += ", "
+            arraystr += data[i][2];
             arraystr += "<br>";
         }
         document.getElementById("data").innerHTML = arraystr;
@@ -89,6 +95,18 @@
         
         document.getElementById("spending").innerHTML = "Total spending: " + spending;
     }
+    
+    function addSelections(options){
+        //Create and append the options
+        for (var i = 0; i < options.length; i++) {
+            var option = document.createElement("option");
+            option.value = options[i];
+            option.text = options[i];
+            document.getElementById("selection").appendChild(option);
+        }    
+    }
+
+
 //    function saveData(filename, data) {
 //        var xmlHttp = new XMLHttpRequest();
   //      xmlHttp.open('SET', filename, false); // last param: false=sync
