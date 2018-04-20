@@ -29,7 +29,7 @@
         <div id="body" align=center>
             Add new purchase:
              <form name="input_sheet" method="post">
-            Purchase: <input type="text" name="purchase" value="food">
+            Purchase: <input type="text" name="purchase" value="milk">
             Price: <input type="text" name="price" value="5">
             Type:
             <select id="selection">
@@ -53,6 +53,7 @@
 //    var datediff = dnow-date1;
 //    var ONE_DAY = 1000 * 60 * 60 * 24;
 //    console.log(Math.round(datediff/ONE_DAY));
+   // console.log(Date().toString());
     var options = ["food", "leisure", "item", "rent", "insurance"];
     document.getElementById("title").innerHTML = "Currency traffic. Today is " + dnow.getDate() + 
                                                  "." + (dnow.getMonth() + 1)  + " " +
@@ -63,16 +64,19 @@
     addSelections(options);
     
     $('#commit-button').click(function validateForm() {
+        ptime = Date().toString();
         purchase = document.forms["input_sheet"]["purchase"].value;
         price = parseInt(document.forms["input_sheet"]["price"].value);
         selection = document.getElementById("selection")["value"];
         
         if (purchase.length > 0) {
-            data.push([purchase, price, selection]);
+            data.push([purchase, price, selection, ptime]);
         }
         printPurchases();
-        document.forms["input_sheet"]["purchase"].value = "";
-        document.forms["input_sheet"]["price"].value = 0;
+        calcTotalSpending();
+        calcCategorySpendings();
+   //     document.forms["input_sheet"]["purchase"].value = "";
+     //   document.forms["input_sheet"]["price"].value = 0;
     });
 
     function loadData(filename) {
@@ -83,6 +87,7 @@
     }
     
     function printPurchases(){
+        // Print the list of goodies bought
         var arraystr = "Recent purchases:<br>";
         for (i=data.length-1;i>-1;i--){
             arraystr += data[i][0];
@@ -90,13 +95,31 @@
             arraystr += data[i][1];
             arraystr += ", "
             arraystr += data[i][2];
+            arraystr += ", "
+            arraystr += data[i][3];
+
             arraystr += "<br>";
         }
         document.getElementById("data").innerHTML = arraystr;
-        calcSpending();
     }
     
-    function calcSpending(){
+    function calcCategorySpendings(){
+        // Calculate (and currently print) categorical spendings for each option
+        var categoryspendings = Array(options.length).fill(0);
+        for (i=0;i<options.length;i++){
+            for (j=0;j<data.length;j++) {
+                if (options[i].valueOf() == data[j][2].valueOf()) {
+                    categoryspendings[i] += data[j][1];
+                }
+            }
+        }
+        console.log(categoryspendings);
+
+//        document.getElementById("spending").innerHTML = "Total spending: " + spending;
+    }
+    
+     function calcTotalSpending(){
+        // Calculate (and currently print) total spending for all products
         spending = 0;
         for (i=0;i<data.length;i++){
             spending += parseInt(data[i][1]);
