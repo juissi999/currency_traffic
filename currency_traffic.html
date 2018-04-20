@@ -24,9 +24,10 @@
 
     <div id="wrapper">
         <div id="title">
-            Add a new purchase
+            Currency traffic
         </div>
         <div id="body" align=center>
+            Add new purchase:
              <form name="input_sheet" method="post">
             Purchase: <input type="text" name="purchase" value="food">
             Price: <input type="text" name="price" value="5">
@@ -47,7 +48,15 @@
 
 //    var data = loadData("data.json");
     var data = [];
+    var dnow = new Date();
+//    var date1 = new Date('April 1, 2018 03:24:00');
+//    var datediff = dnow-date1;
+//    var ONE_DAY = 1000 * 60 * 60 * 24;
+//    console.log(Math.round(datediff/ONE_DAY));
     var options = ["food", "leisure", "item", "rent", "insurance"];
+    document.getElementById("title").innerHTML = "Currency traffic. Today is " + dnow.getDate() + 
+                                                 "." + (dnow.getMonth() + 1)  + " " +
+                                                 dnow.getFullYear();
     
     document.getElementById("data").innerHTML = data;
     printPurchases();
