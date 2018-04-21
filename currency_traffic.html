@@ -107,18 +107,20 @@
     
     function printPurchases(){
         // Print the list of goodies bought
-        var arraystr = "";
+        var arraystr = "<table style=\"width:100%\">";
         for (i=data.length-1;i>-1;i--){
+            arraystr += "<tr><td>"
             arraystr += data[i][0];
-            arraystr += ", "
+            arraystr += "</td><td>"
             arraystr += data[i][1];
-            arraystr += ", "
+            arraystr += "</td><td>"
             arraystr += data[i][2];
-            arraystr += ", "
-            arraystr += data[i][3];
+            arraystr += "</td><td>"
+            arraystr +=data[i][3];
 
-            arraystr += "<br>";
+            arraystr += "</tr>";
         }
+        arraystr += "</table>"
         document.getElementById("data").innerHTML = arraystr;
     }
     
