@@ -8,12 +8,22 @@
     #title {
         text-align: center;
         margin-bottom: 50px;
+        font-size: 25px;
+
     }
+    #title2 {
+        font-size:25px;
+        text-align: left;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
     #body {
     }
     #wrapper {
+        text-align: left;
         padding: 20px 150px 150px 150px;
-        margin: 50px 150px;
+        margin: 20px 75px;
         border: 2px solid black;
     }
 </style>
@@ -26,8 +36,10 @@
         <div id="title">
             Currency traffic
         </div>
-        <div id="body" align=center>
-            Add new purchase:
+        <div id="body">
+            <div id="title2">
+                Add new purchase
+            </div>
              <form name="input_sheet" method="post">
             Purchase: <input type="text" name="purchase" value="milk">
             Price: <input type="text" name="price" value="5">
@@ -35,8 +47,15 @@
             <select id="selection">
             </select>
             <input id="commit-button" type="button" value="Commit">
+            
             </form>
+            <div id="title2">
+                Spendings 
+            </div>
             <p id="spending"></p>
+            <div id="title2">
+                Purchases
+            </div>
             <p id="data"></p>
         </div>
     </div>
@@ -53,10 +72,10 @@
 //    var datediff = dnow-date1;
 //    var ONE_DAY = 1000 * 60 * 60 * 24;
 //    console.log(Math.round(datediff/ONE_DAY));
-   // console.log(Date().toString());
+//    console.log(Date().toString());
     var options = ["food", "leisure", "item", "rent", "insurance"];
     document.getElementById("title").innerHTML = "Currency traffic. Today is " + dnow.getDate() + 
-                                                 "." + (dnow.getMonth() + 1)  + " " +
+                                                 "." + (dnow.getMonth() + 1)  + "." +
                                                  dnow.getFullYear();
     
     document.getElementById("data").innerHTML = data;
@@ -75,8 +94,8 @@
         printPurchases();
         calcTotalSpending();
         calcCategorySpendings();
-   //     document.forms["input_sheet"]["purchase"].value = "";
-     //   document.forms["input_sheet"]["price"].value = 0;
+//        document.forms["input_sheet"]["purchase"].value = "";
+//        document.forms["input_sheet"]["price"].value = 0;
     });
 
     function loadData(filename) {
@@ -88,7 +107,7 @@
     
     function printPurchases(){
         // Print the list of goodies bought
-        var arraystr = "Recent purchases:<br>";
+        var arraystr = "";
         for (i=data.length-1;i>-1;i--){
             arraystr += data[i][0];
             arraystr += ", "
