@@ -22,16 +22,15 @@
     }
     #wrapper {
         text-align: left;
-        padding: 20px 150px 150px 150px;
+        padding: 20px 50px 50px 50px;
         margin: 20px 75px;
-        border: 2px solid black;
+
     }
 </style>
 <head>
     <title>Currency traffic</title>
 </head>
 <body>
-
     <div id="wrapper">
         <div id="title">
             Currency traffic
@@ -46,13 +45,14 @@
             Type:
             <select id="selection">
             </select>
-            <input id="commit-button" type="button" value="Commit">
+            <input id="commit-button" type="button" value="Add">
             
             </form>
             <div id="title2">
                 Spendings 
             </div>
             <p id="spending"></p>
+            <p id="categoryspending"></p>
             <div id="title2">
                 Purchases
             </div>
@@ -107,7 +107,8 @@
     
     function printPurchases(){
         // Print the list of goodies bought
-        var arraystr = "<table style=\"width:100%\">";
+        var arraystr = "<table style=\"width:60%\">";
+        arraystr += "<tr><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>"
         for (i=data.length-1;i>-1;i--){
             arraystr += "<tr><td>"
             arraystr += data[i][0];
@@ -134,9 +135,11 @@
                 }
             }
         }
-        console.log(categoryspendings);
-
-//        document.getElementById("spending").innerHTML = "Total spending: " + spending;
+        spendingstr = "";
+        for (i=0;i<options.length;i++){
+            spendingstr += options[i] + ": " + categoryspendings[i] + " ";
+        }
+        document.getElementById("categoryspending").innerHTML = spendingstr;
     }
     
      function calcTotalSpending(){
@@ -146,7 +149,7 @@
             spending += parseInt(data[i][1]);
         }
         
-        document.getElementById("spending").innerHTML = "Total spending: " + spending;
+        document.getElementById("spending").innerHTML = "Total: " + spending;
     }
     
     function addSelections(options){
