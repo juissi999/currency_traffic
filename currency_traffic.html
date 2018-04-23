@@ -2,174 +2,196 @@
 <html>
 
 <style type="text/css">
-    body {		
+    body {
         font-size: 20px;
-    }
-    #title {
-        text-align: center;
-        margin-bottom: 50px;
-        font-size: 25px;
-
-    }
-    #title2 {
-        font-size:25px;
-        text-align: left;
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-    #body {
-    }
-    #wrapper {
         text-align: left;
         padding: 20px 50px 50px 50px;
         margin: 20px 75px;
+    }
+    
+    h1 {
+        color: #339966;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 34px;
+        font-weight: 300;
+        line-height: 40px;
+        margin: 0 0 16px;
+    }
 
+    h2 {
+        color: #339966;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 24px;
+        font-weight: 300;
+        line-height: 32px;
+        margin: 14px 0 14px;
+    }
+
+    p {
+        color: #222;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 24px;
+        margin: 0 0 14px;
+    }
+
+    a { 
+        background: #fff;
+        color: #222;
+        text-decoration: none;
+    }
+
+    a:hover {
+        background: #F90B6D;
+        color: #eee;
+        text-decoration: none;
     }
 </style>
+
 <head>
     <title>Currency traffic</title>
 </head>
 <body>
-    <div id="wrapper">
-        <div id="title">
-            Currency traffic
-        </div>
-        <div id="body">
-            <div id="title2">
-                Add new purchase
-            </div>
-             <form name="input_sheet" method="post">
-            Purchase: <input type="text" name="purchase" value="milk">
-            Price: <input type="text" name="price" value="5">
-            Type:
-            <select id="selection">
-            </select>
-            <input id="commit-button" type="button" value="Add">
-            
-            </form>
-            <div id="title2">
-                Spendings 
-            </div>
-            <p id="spending"></p>
-            <p id="categoryspending"></p>
-            <div id="title2">
-                Purchases
-            </div>
-            <p id="data"></p>
-        </div>
-    </div>
+    <h1>
+        Currency traffic
+        <div id="time"></div>
+    </h1>
+    <h2>
+        Add new purchase
+    </h2>
+     <form name="input_sheet" method="post">
+        Purchase: <input type="text" name="purchase" value="milk">
+        Price: <input type="text" name="price" value="5">
+        Type:
+        <select id="selection">
+        </select>
+        <input id="commit-button" type="button" value="Add">        
+    </form>
+    <h2>
+        Spendings 
+    </h2>
+    <p id="spending"></p>
+    <p id="categoryspending"></p>
+    <h2>
+        Purchases
+    </h2>
+    <p id="data"></p>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script type="text/javascript">
-(function () { //closure
-  // code
 
-//    var data = loadData("data.json");
-    var data = [];
-    var dnow = new Date();
-//    var date1 = new Date('April 1, 2018 03:24:00');
-//    var datediff = dnow-date1;
-//    var ONE_DAY = 1000 * 60 * 60 * 24;
-//    console.log(Math.round(datediff/ONE_DAY));
-//    console.log(Date().toString());
-    var options = ["food", "leisure", "item", "rent", "insurance"];
-    document.getElementById("title").innerHTML = "Currency traffic. Today is " + dnow.getDate() + 
-                                                 "." + (dnow.getMonth() + 1)  + "." +
-                                                 dnow.getFullYear();
-    
-    document.getElementById("data").innerHTML = data;
-    printPurchases();
-    addSelections(options);
-    
-    $('#commit-button').click(function validateForm() {
-        ptime = Date().toString();
-        purchase = document.forms["input_sheet"]["purchase"].value;
-        price = parseInt(document.forms["input_sheet"]["price"].value);
-        selection = document.getElementById("selection")["value"];
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript">
+    (function () { //closure
+      // code
+
+    //    var data = loadData("data.json");
+        var data = [];
+        var dnow = new Date();
+    //    var date1 = new Date('April 1, 2018 03:24:00');
+    //    var datediff = dnow-date1;
+    //    var ONE_DAY = 1000 * 60 * 60 * 24;
+    //    console.log(Math.round(datediff/ONE_DAY));
+    //    console.log(Date().toString());
+        var options = ["food", "leisure", "item", "rent", "insurance"];
+        document.getElementById("time").innerHTML = "Today is " + dnow.getDate() + 
+                                                     "." + (dnow.getMonth() + 1)  + "." +
+                                                     dnow.getFullYear();
         
-        if (purchase.length > 0) {
-            data.push([purchase, price, selection, ptime]);
-        }
+        document.getElementById("data").innerHTML = data;
         printPurchases();
         calcTotalSpending();
         calcCategorySpendings();
-//        document.forms["input_sheet"]["purchase"].value = "";
-//        document.forms["input_sheet"]["price"].value = 0;
-    });
-
-    function loadData(filename) {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open('GET', filename, false); // last param: false=sync
-        xmlHttp.send();
-        return JSON.parse(xmlHttp.responseText);
-    }
-    
-    function printPurchases(){
-        // Print the list of goodies bought
-        var arraystr = "<table style=\"width:60%\">";
-        arraystr += "<tr><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>"
-        for (i=data.length-1;i>-1;i--){
-            arraystr += "<tr><td>"
-            arraystr += data[i][0];
-            arraystr += "</td><td>"
-            arraystr += data[i][1];
-            arraystr += "</td><td>"
-            arraystr += data[i][2];
-            arraystr += "</td><td>"
-            arraystr +=data[i][3];
-
-            arraystr += "</tr>";
-        }
-        arraystr += "</table>"
-        document.getElementById("data").innerHTML = arraystr;
-    }
-    
-    function calcCategorySpendings(){
-        // Calculate (and currently print) categorical spendings for each option
-        var categoryspendings = Array(options.length).fill(0);
-        for (i=0;i<options.length;i++){
-            for (j=0;j<data.length;j++) {
-                if (options[i].valueOf() == data[j][2].valueOf()) {
-                    categoryspendings[i] += data[j][1];
-                }
+        
+        addSelections(options);
+        
+        $('#commit-button').click(function validateForm() {
+            ptime = Date().toString();
+            purchase = document.forms["input_sheet"]["purchase"].value;
+            price = parseInt(document.forms["input_sheet"]["price"].value);
+            selection = document.getElementById("selection")["value"];
+            
+            if (purchase.length > 0) {
+                data.push([purchase, price, selection, ptime]);
             }
-        }
-        spendingstr = "";
-        for (i=0;i<options.length;i++){
-            spendingstr += options[i] + ": " + categoryspendings[i] + " ";
-        }
-        document.getElementById("categoryspending").innerHTML = spendingstr;
-    }
-    
-     function calcTotalSpending(){
-        // Calculate (and currently print) total spending for all products
-        spending = 0;
-        for (i=0;i<data.length;i++){
-            spending += parseInt(data[i][1]);
+            printPurchases();
+            calcTotalSpending();
+            calcCategorySpendings();
+    //        document.forms["input_sheet"]["purchase"].value = "";
+    //        document.forms["input_sheet"]["price"].value = 0;
+        });
+
+        function loadData(filename) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open('GET', filename, false); // last param: false=sync
+            xmlHttp.send();
+            return JSON.parse(xmlHttp.responseText);
         }
         
-        document.getElementById("spending").innerHTML = "Total: " + spending;
-    }
-    
-    function addSelections(options){
-        //Create and append the options
-        for (var i = 0; i < options.length; i++) {
-            var option = document.createElement("option");
-            option.value = options[i];
-            option.text = options[i];
-            document.getElementById("selection").appendChild(option);
-        }    
-    }
+        function printPurchases(){
+            // Print the list of goodies bought
+            var arraystr = "<table style=\"width:60%\">";
+            arraystr += "<tr><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>"
+            for (i=data.length-1;i>-1;i--){
+                arraystr += "<tr><td>"
+                arraystr += data[i][0];
+                arraystr += "</td><td>"
+                arraystr += data[i][1];
+                arraystr += "</td><td>"
+                arraystr += data[i][2];
+                arraystr += "</td><td>"
+                arraystr +=data[i][3];
+
+                arraystr += "</tr>";
+            }
+            arraystr += "</table>"
+            document.getElementById("data").innerHTML = arraystr;
+        }
+        
+        function calcCategorySpendings(){
+            // Calculate (and currently print) categorical spendings for each option
+            var categoryspendings = Array(options.length).fill(0);
+            for (i=0;i<options.length;i++){
+                for (j=0;j<data.length;j++) {
+                    if (options[i].valueOf() == data[j][2].valueOf()) {
+                        categoryspendings[i] += data[j][1];
+                    }
+                }
+            }
+            spendingstr = "";
+            for (i=0;i<options.length;i++){
+                spendingstr += options[i] + ": " + categoryspendings[i] + " ";
+            }
+            document.getElementById("categoryspending").innerHTML = spendingstr;
+        }
+        
+         function calcTotalSpending(){
+            // Calculate (and currently print) total spending for all products
+            spending = 0;
+            for (i=0;i<data.length;i++){
+                spending += parseInt(data[i][1]);
+            }
+            
+            document.getElementById("spending").innerHTML = "Total: " + spending;
+        }
+        
+        function addSelections(options){
+            //Create and append the options
+            for (var i = 0; i < options.length; i++) {
+                var option = document.createElement("option");
+                option.value = options[i];
+                option.text = options[i];
+                document.getElementById("selection").appendChild(option);
+            }    
+        }
 
 
-//    function saveData(filename, data) {
-//        var xmlHttp = new XMLHttpRequest();
-  //      xmlHttp.open('SET', filename, false); // last param: false=sync
-    //    xmlHttp.send();
-  //  }
-}());
-</script>
+    //    function saveData(filename, data) {
+    //        var xmlHttp = new XMLHttpRequest();
+      //      xmlHttp.open('SET', filename, false); // last param: false=sync
+        //    xmlHttp.send();
+      //  }
+    }());
+    </script>
 </body>
 
 </html>
