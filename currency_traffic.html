@@ -25,16 +25,21 @@
     </h2>
     <p id="spending"></p>
     <p id="categoryspending"></p>
+    <p id="charts" style="width: 450px; height: 250px;"></p>
     <h2>
         Purchases
     </h2>
     <p id="data"></p>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
     (function () { //closure
         // code
         
+        // load google charts
+        google.charts.load('current', {'packages':['corechart']});
+
         // load stored datafile from memory
         // var data = loadData("data.json");
         var data = [];
@@ -67,7 +72,8 @@
             }
             printPurchases();
             calcTotalSpending();
-            calcCategorySpendings();
+            var categoryspendings = calcCategorySpendings();
+            drawChart(categoryspendings);
         });
 
         function loadData(filename) {
@@ -112,6 +118,7 @@
                 spendingstr += options[i] + ": " + categoryspendings[i] + " ";
             }
             document.getElementById("categoryspending").innerHTML = spendingstr;
+            return categoryspendings;
         }
         
          function calcTotalSpending(){
@@ -134,6 +141,20 @@
             }    
         }
 
+        function drawChart(spendings){
+            var d = [['Category', 'Spending on category']];
+            for (var i = 0; i < options.length; i++){
+                d.push([options[i], spendings[i]]);
+            }
+        
+            var data = google.visualization.arrayToDataTable(d);
+
+            var ops = {
+              title: 'My spendings'
+            };
+            var chart = new google.visualization.PieChart(document.getElementById('charts'));
+            chart.draw(data, ops);
+        }
         
     //    function saveData(filename, data) {
     //        var xmlHttp = new XMLHttpRequest();
