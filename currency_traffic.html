@@ -25,7 +25,8 @@
     </h2>
     <p id="spending"></p>
     <p id="categoryspending"></p>
-    <p id="charts" style="width: 450px; height: 250px;"></p>
+    <p id="chart" style="width: 450px; height: 250px;"></p>
+    <p id="chart2" style="width: 450px; height: 250px;"></p>
     <h2>
         Purchases
     </h2>
@@ -49,7 +50,7 @@
     //    var ONE_DAY = 1000 * 60 * 60 * 24;
     //    console.log(Math.round(datediff/ONE_DAY));
     //    console.log(Date().toString());
-        var options = ["food", "leisure", "item", "rent", "insurance"];
+        var options = ["food", "service", "leisure", "item", "rent", "insurance"];
         document.getElementById("time").innerHTML = "Today is " + dnow.getDate() + 
                                                      "." + (dnow.getMonth() + 1)  + "." +
                                                      dnow.getFullYear();
@@ -77,8 +78,11 @@
         function updateStatistics(){
             printPurchases();
             calcTotalSpending();
+            calcMonthlySpendins();
+            
             var categoryspendings = calcCategorySpendings();
-            drawChart(categoryspendings);
+            var monthlyspendings = calcMonthlySpendins();
+            drawChart(categoryspendings, monthlyspendings);
         }
         
         function loadData(filename) {
@@ -115,6 +119,22 @@
                     updateStatistics();
                 });
             }
+        }
+
+        function calcMonthlySpendins(){
+          var monthlyspendings = {}
+          
+          // find all months when purchases are made
+          for (i=0;i<data.length;i++) {
+            var ditem = new Date(data[i][3])
+            var month = ditem.getMonth()
+            if (month in monthlyspendings) {
+               monthlyspendings[month] += data[i][1]
+            } else {
+               monthlyspendings[month] = data[i][1]
+            }
+          }
+         return monthlyspendings;
         }
         
         function calcCategorySpendings(){
@@ -155,19 +175,29 @@
             }
         }
 
-        function drawChart(spendings){
+        function drawChart(categoryspendings, monthlyspendings){
+            // parse categoryspendings
             var d = [['Category', 'Spending on category']];
             for (var i = 0; i < options.length; i++){
-                d.push([options[i], spendings[i]]);
+                d.push([options[i], categoryspendings[i]]);
             }
-        
-            var data = google.visualization.arrayToDataTable(d);
-
+            
+            // parse monthlyspendings
+            var d2 = [["month", "spending"]]
+            for (var key in monthlyspendings) {
+               d2.push([key, monthlyspendings[key]])
+            }
+            
+            var piedata = google.visualization.arrayToDataTable(d);
+            var linedata = google.visualization.arrayToDataTable(d2);
+            
             var ops = {
               title: 'My spendings'
             };
-            var chart = new google.visualization.PieChart(document.getElementById('charts'));
-            chart.draw(data, ops);
+            var chart = new google.visualization.PieChart(document.getElementById('chart'));
+            var chart2 = new google.visualization.LineChart(document.getElementById('chart2'));
+            chart.draw(piedata, ops);
+            chart2.draw(linedata, ops);
         }
 
     //    function saveData(filename, data) {
