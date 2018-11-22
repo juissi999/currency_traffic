@@ -25,8 +25,12 @@
     </h2>
     <p id="spending"></p>
     <p id="categoryspending"></p>
-    <p id="chart" style="width: 450px; height: 250px;"></p>
-    <p id="chart2" style="width: 450px; height: 250px;"></p>
+    <div style="width: 100%; display: table;">
+      <div id="charts" style="display: table-row">
+         <div id="chart" style="width: 450px; height: 250px; display:table-cell;"></div>
+         <div id="chart2" style="width: 450px; height: 250px display:table-cell;;"></div>
+      </div>
+    </div>
     <h2>
         Purchases
     </h2>
@@ -80,9 +84,14 @@
             calcTotalSpending();
             calcMonthlySpendins();
             
-            var categoryspendings = calcCategorySpendings();
-            var monthlyspendings = calcMonthlySpendins();
-            drawChart(categoryspendings, monthlyspendings);
+            if (data.length > 0) {
+               var categoryspendings = calcCategorySpendings();
+               var monthlyspendings = calcMonthlySpendins();
+               drawChart(categoryspendings, monthlyspendings);
+            } else {
+               document.getElementById('chart').innerHTML = ""
+               document.getElementById('chart2').innerHTML = ""
+            }
         }
         
         function loadData(filename) {
@@ -191,13 +200,10 @@
             var piedata = google.visualization.arrayToDataTable(d);
             var linedata = google.visualization.arrayToDataTable(d2);
             
-            var ops = {
-              title: 'My spendings'
-            };
             var chart = new google.visualization.PieChart(document.getElementById('chart'));
             var chart2 = new google.visualization.LineChart(document.getElementById('chart2'));
-            chart.draw(piedata, ops);
-            chart2.draw(linedata, ops);
+            chart.draw(piedata, {title: 'Categorical spending'});
+            chart2.draw(linedata, {title: 'Monthly spending'});
         }
 
     //    function saveData(filename, data) {
