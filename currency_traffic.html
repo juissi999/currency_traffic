@@ -80,7 +80,11 @@
         $("#randombutton").click(function validateForm() {
           var rnddate = new Date();
           rnddate.setTime(Math.round(rnddate.getTime()*Math.random()));
-          addPurchase(document.forms["input_sheet"]["purchase"].value, parseInt(document.forms["input_sheet"]["price"].value), document.getElementById("selection")["value"], rnddate);
+          
+          var rndprice = Math.floor((Math.random() * 100) + 1)
+          var rndselection = Math.floor((Math.random() * document.getElementById("selection").length))
+          //console.log(document.getElementById("selection")[0])
+          addPurchase("random", rndprice, document.getElementById("selection")[rndselection]["value"], rnddate);
         });
         
         function addPurchase(purchase, price, selection, datetime) {
