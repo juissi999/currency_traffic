@@ -53,6 +53,8 @@
         // var data = loadData("data.json");
         var data = [];
         var dnow = new Date();
+        var monthnames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
     //    var date1 = new Date('April 1, 2018 03:24:00');
     //    var datediff = dnow-date1;
     //    var ONE_DAY = 1000 * 60 * 60 * 24;
@@ -240,7 +242,7 @@
             var monthlyspendings = yearlyspendings[dnow.getFullYear()]
             var d2 = [["month", "spending"]]
             for (var key in monthlyspendings) {
-               d2.push([key, monthlyspendings[key]])
+               d2.push([monthnames[key], monthlyspendings[key]]) //parseInt(Number(key)+1)
             }
             
             // parse yearlyspendings
