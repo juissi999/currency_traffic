@@ -19,7 +19,7 @@
         <select id="selection">
         </select>
         <input id="addbutton" type="button" value="Add">
-        <input id="randombutton" type="button" value="Add random">
+        <input id="randombutton" type="button" value="Add 100 random purchases">
     </form>
     <h2>
         Spendings 
@@ -30,6 +30,9 @@
       <div id="charts" style="display: table-row">
          <div id="chart" style="width: 450px; height: 250px; display:table-cell;"></div>
          <div id="chart2" style="width: 450px; height: 250px display:table-cell;;"></div>
+      </div>
+      <div id="charts" style="display: table-row">
+        <div id="chart3" style="width: 450px; height: 250px display:table-cell;;"></div>
       </div>
     </div>
     <h2>
@@ -75,23 +78,29 @@
             selection = document.getElementById("selection")["value"];
 
             addPurchase(purchase, price, selection, ptime);
+            updateStatistics();
         });
 
         $("#randombutton").click(function validateForm() {
-          var rnddate = new Date();
-          rnddate.setTime(Math.round(rnddate.getTime()*Math.random()));
-          
-          var rndprice = Math.floor((Math.random() * 100) + 1)
-          var rndselection = Math.floor((Math.random() * document.getElementById("selection").length))
-          //console.log(document.getElementById("selection")[0])
-          addPurchase("random", rndprice, document.getElementById("selection")[rndselection]["value"], rnddate);
+
+          var howmanyrandom = 100
+          for (var i=0;i<howmanyrandom;i++) {
+             // generate random attributes
+             var rnddate = new Date();
+             rnddate.setTime(Math.round(rnddate.getTime()*Math.random()));
+             var rndprice = Math.floor((Math.random() * 100) + 1)
+             var rndselection = Math.floor((Math.random() * document.getElementById("selection").length))
+
+             // insert purchase
+             addPurchase("random", rndprice, document.getElementById("selection")[rndselection]["value"], rnddate);
+          }
+          updateStatistics();
         });
         
         function addPurchase(purchase, price, selection, datetime) {
             if (purchase.length > 0) {
                data.push([purchase, price, selection, datetime]);
             }
-            updateStatistics();
         }
         
         function updateStatistics(){
@@ -146,19 +155,40 @@
         }
 
         function calcMonthlySpendins(){
-          var monthlyspendings = {}
+          var yearlyspendings = {}
+          
+          // TEMPORARY: add this year to the table
+          yearlyspendings[dnow.getFullYear()] = {}
+          for (j=0;j<dnow.getMonth()+1;j++) {
+            yearlyspendings[dnow.getFullYear()][j] = 0
+          }
+ //         yearlyspendings[dnow.getFullYear()][dnow.getMonth()] = 0
           
           // find all months when purchases are made
           for (i=0;i<data.length;i++) {
             var ditem = new Date(data[i][3])
             var month = ditem.getMonth()
-            if (month in monthlyspendings) {
-               monthlyspendings[month] += data[i][1]
-            } else {
-               monthlyspendings[month] = data[i][1]
+            var year = ditem.getFullYear()
+            
+            // check if year exists
+            if (!(year in yearlyspendings)) {
+               yearlyspendings[year] = {}
+               
+               // format all months to zero consumption ( TODO: possibly make a 
+               // zeromonths, initialized dict of empty months and copy it to all
+               // years.) Get rid of the duplicate of this in the beginning of func.
+               for (j=0;j<12;j++) {
+                  yearlyspendings[year][j] = 0
+               }
+            }
+            
+            if (month in yearlyspendings[year]) {
+               yearlyspendings[year][month] += data[i][1]
+//            } else {
+ //              yearlyspendings[year][month] = data[i][1]
             }
           }
-         return monthlyspendings;
+         return yearlyspendings;
         }
         
         function calcCategorySpendings(){
@@ -179,14 +209,14 @@
             return categoryspendings;
         }
         
-         function calcTotalSpending(){
-            // Calculate (and currently print) total spending for all products
-            spending = 0;
-            for (var i=0;i<data.length;i++){
-                spending += parseInt(data[i][1]);
-            }
+        function calcTotalSpending(){
+          // Calculate (and currently print) total spending for all products
+          spending = 0;
+          for (var i=0;i<data.length;i++){
+            spending += parseInt(data[i][1]);
+          }
             
-            document.getElementById("spending").innerHTML = "Total: " + spending;
+          document.getElementById("spending").innerHTML = "Total: " + spending;
         }
         
         function addSelections(options){
@@ -199,7 +229,7 @@
             }
         }
 
-        function drawChart(categoryspendings, monthlyspendings){
+        function drawChart(categoryspendings, yearlyspendings){
             // parse categoryspendings
             var d = [['Category', 'Spending on category']];
             for (var i = 0; i < options.length; i++){
@@ -207,18 +237,34 @@
             }
             
             // parse monthlyspendings
+            var monthlyspendings = yearlyspendings[dnow.getFullYear()]
             var d2 = [["month", "spending"]]
             for (var key in monthlyspendings) {
                d2.push([key, monthlyspendings[key]])
             }
             
+            // parse yearlyspendings
+            var yearlyspending = 0
+            var d3 = [["year", "spending"]]
+            for (var key in yearlyspendings) {
+               // loop and sum all monthly spendings across year
+               for (var mkey in yearlyspendings[key]) {
+                  yearlyspending += yearlyspendings[key][mkey]
+               }
+               d3.push([key, yearlyspending])
+               yearlyspending = 0
+            }
+            
             var piedata = google.visualization.arrayToDataTable(d);
-            var linedata = google.visualization.arrayToDataTable(d2);
+            var monthlydata = google.visualization.arrayToDataTable(d2);
+            var yearlydata = google.visualization.arrayToDataTable(d3);
             
             var chart = new google.visualization.PieChart(document.getElementById('chart'));
             var chart2 = new google.visualization.LineChart(document.getElementById('chart2'));
+            var chart3 = new google.visualization.LineChart(document.getElementById('chart3'));
             chart.draw(piedata, {title: 'Categorical spending'});
-            chart2.draw(linedata, {title: 'Monthly spending'});
+            chart2.draw(monthlydata, {title: 'Monthly spending'});
+            chart3.draw(yearlydata, {title: 'Spending by year'});
         }
 
     //    function saveData(filename, data) {
