@@ -110,12 +110,12 @@
           // this function updates the view, recalculates all too
           printPurchases(data);
           calcTotalSpending();
-          calcMonthlySpendins();
+//          calcMonthlySpendins();
             
           spendingstr = "";
           if (data.length > 0) {
              var categoryspendings = calcCategorySpendings(data);
-             var monthlyspendings = calcMonthlySpendins();
+             var monthlyspendings = calcYearlySpendins();
              printCharts(categoryspendings, monthlyspendings, year);
 
              // form categorical spending string
@@ -131,39 +131,42 @@
           document.getElementById("categoryspending").innerHTML = spendingstr;
        }
 
-        function calcMonthlySpendins(){
+        function calcYearlySpendins(){
+
           var yearlyspendings = {}
-          
-          // TEMPORARY: add this year to the table
-          yearlyspendings[dnow.getFullYear()] = {}
-          for (j=0;j<dnow.getMonth()+1;j++) {
-            yearlyspendings[dnow.getFullYear()][j] = 0
+
+          // initialize year dict with all years starting from beginning to this
+          // moment with empty dicts.
+          var oldestyear = dnow.getFullYear()
+          for (i=0;i<data.length;i++) {
+            var ditem = new Date(data[i][3])
+            var year = ditem.getFullYear()
+            if (year < oldestyear) {
+              oldestyear = year
+            }
           }
- //         yearlyspendings[dnow.getFullYear()][dnow.getMonth()] = 0
           
+          // loop all years and add zero months
+          for (i=oldestyear;i<=dnow.getFullYear();i++) {
+            yearlyspendings[i] = {}
+            
+            // loop all months, but if current year, only loop till current month
+            var maxmonth = 12
+            if (i == dnow.getFullYear()) {
+               maxmonth = dnow.getMonth() + 1
+            }
+            for (j=0;j<maxmonth;j++) {
+              yearlyspendings[i][j] = 0
+            }
+          }
+
           // find all months when purchases are made
           for (i=0;i<data.length;i++) {
             var ditem = new Date(data[i][3])
             var month = ditem.getMonth()
             var year = ditem.getFullYear()
             
-            // check if year exists
-            if (!(year in yearlyspendings)) {
-               yearlyspendings[year] = {}
-               
-               // format all months to zero consumption ( TODO: possibly make a 
-               // zeromonths, initialized dict of empty months and copy it to all
-               // years.) Get rid of the duplicate of this in the beginning of func.
-               for (j=0;j<12;j++) {
-                  yearlyspendings[year][j] = 0
-               }
-            }
-            
-            if (month in yearlyspendings[year]) {
-               yearlyspendings[year][month] += data[i][1]
-//            } else {
- //              yearlyspendings[year][month] = data[i][1]
-            }
+            yearlyspendings[year][month] += data[i][1]
           }
          return yearlyspendings;
         }
