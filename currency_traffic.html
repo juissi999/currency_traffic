@@ -65,7 +65,8 @@
                                                      "." + (dnow.getMonth() + 1)  + "." +
                                                      dnow.getFullYear();
         
-        document.getElementById("data").innerHTML = data;
+        //document.getElementById("data").innerHTML = data;
+        // generate selections for different categories
         addSelections(options);
 
         // if data exists at this point, calc and draw statistics
@@ -110,51 +111,24 @@
             calcTotalSpending();
             calcMonthlySpendins();
             
+            spendingstr = "";
             if (data.length > 0) {
-               var categoryspendings = calcCategorySpendings();
+               var categoryspendings = calcCategorySpendings(data);
                var monthlyspendings = calcMonthlySpendins();
-               drawChart(categoryspendings, monthlyspendings);
+               printCharts(categoryspendings, monthlyspendings);
+
+               // form categorical spending string
+               for (var i=0;i<options.length;i++){
+                   spendingstr += options[i] + ": " + categoryspendings[i] + " ";
+               }
             } else {
                document.getElementById('chart').innerHTML = ""
                document.getElementById('chart2').innerHTML = ""
             }
-        }
-        
-        function loadData(filename) {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open('GET', filename, false); // last param: false=sync
-            xmlHttp.send();
-            return JSON.parse(xmlHttp.responseText);
-        }
-        
-        function printPurchases(){
-            // Print the list of goodies bought
-            var arraystr = "<table>";
-            arraystr += "<tr><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>"
-            for (var i=data.length-1;i>-1;i--){
-                arraystr += "<tr><td>"
-                arraystr += data[i][0];
-                arraystr += "</td><td>"
-                arraystr += data[i][1];
-                arraystr += "</td><td>"
-                arraystr += data[i][2];
-                arraystr += "</td><td>"
-                arraystr += data[i][3];
-                arraystr += "</td><td>"
-                arraystr += "<input id=\"rb" + i + "\" type=\"button\" value=\"Remove item\">";
-                arraystr += "</tr>";
-            }
-            arraystr += "</table>"
-            document.getElementById("data").innerHTML = arraystr;
-            
-            // add click-function to each remove-button
-            for (var i=0;i<data.length;i++){
-                $("#rb" + i).click({p1:i}, function removeItem(event){
-                    data.splice(event.data.p1, 1);
-                    updateStatistics();
-                });
-            }
-        }
+
+            // update categorical spending string
+            document.getElementById("categoryspending").innerHTML = spendingstr;
+         }
 
         function calcMonthlySpendins(){
           var yearlyspendings = {}
@@ -193,21 +167,16 @@
          return yearlyspendings;
         }
         
-        function calcCategorySpendings(){
-            // Calculate (and currently print) categorical spendings for each option
+        function calcCategorySpendings(inputdata){
+            // Calculate categorical spendings for each option for input values
             var categoryspendings = Array(options.length).fill(0);
             for (var i=0;i<options.length;i++){
                 for (j=0;j<data.length;j++) {
-                    if (options[i].valueOf() == data[j][2].valueOf()) {
-                        categoryspendings[i] += data[j][1];
+                    if (options[i].valueOf() == inputdata[j][2].valueOf()) {
+                        categoryspendings[i] += inputdata[j][1];
                     }
                 }
             }
-            spendingstr = "";
-            for (var i=0;i<options.length;i++){
-                spendingstr += options[i] + ": " + categoryspendings[i] + " ";
-            }
-            document.getElementById("categoryspending").innerHTML = spendingstr;
             return categoryspendings;
         }
         
@@ -230,15 +199,15 @@
                 document.getElementById("selection").appendChild(option);
             }
         }
-
-        function drawChart(categoryspendings, yearlyspendings){
+       
+        function printCharts(categoryspendings, yearlyspendings){
             // parse categoryspendings
             var d = [['Category', 'Spending on category']];
             for (var i = 0; i < options.length; i++){
                 d.push([options[i], categoryspendings[i]]);
             }
             
-            // parse monthlyspendings
+            // parse monthlyspendings for selected year
             var monthlyspendings = yearlyspendings[dnow.getFullYear()]
             var d2 = [["month", "spending"]]
             for (var key in monthlyspendings) {
@@ -264,16 +233,48 @@
             var chart = new google.visualization.PieChart(document.getElementById('chart'));
             var chart2 = new google.visualization.LineChart(document.getElementById('chart2'));
             var chart3 = new google.visualization.LineChart(document.getElementById('chart3'));
+
+            function selectYear() {
+              // when user selects year set draw that years monthly graph
+              var item = chart3.getSelection()[0];
+              var year = d3[item.row][0];
+              
+            }
+
             chart.draw(piedata, {title: 'Categorical spending'});
             chart2.draw(monthlydata, {title: 'Monthly spending'});
             chart3.draw(yearlydata, {title: 'Spending by year'});
+            google.visualization.events.addListener(chart3, 'select', selectYear); 
         }
-
-    //    function saveData(filename, data) {
-    //        var xmlHttp = new XMLHttpRequest();
-      //      xmlHttp.open('SET', filename, false); // last param: false=sync
-        //    xmlHttp.send();
-      //  }
+                
+        function printPurchases(){
+            // Print the list of goodies bought
+            var arraystr = "<table>";
+            arraystr += "<tr><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>"
+            for (var i=data.length-1;i>-1;i--){
+                arraystr += "<tr><td>"
+                arraystr += data[i][0];
+                arraystr += "</td><td>"
+                arraystr += data[i][1];
+                arraystr += "</td><td>"
+                arraystr += data[i][2];
+                arraystr += "</td><td>"
+                arraystr += data[i][3];
+                arraystr += "</td><td>"
+                arraystr += "<input id=\"rb" + i + "\" type=\"button\" value=\"Remove item\">";
+                arraystr += "</tr>";
+            }
+            arraystr += "</table>"
+            document.getElementById("data").innerHTML = arraystr;
+            
+            // add click-function to each remove-button
+            for (var i=0;i<data.length;i++){
+                $("#rb" + i).click({p1:i}, function removeItem(event){
+                    data.splice(event.data.p1, 1);
+                    updateStatistics();
+                });
+            }
+        }
     }());
     </script>
 </body>
