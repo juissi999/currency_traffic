@@ -49,8 +49,8 @@
         // load google charts
         google.charts.load('current', {'packages':['corechart']});
 
-        // load stored datafile from memory
-        // var data = loadData("data.json");
+        // TODO:load stored datafile from memory or browser
+
         var data = [];
         var dnow = new Date();
         var monthnames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -65,15 +65,15 @@
                                                      "." + (dnow.getMonth() + 1)  + "." +
                                                      dnow.getFullYear();
         
-        //document.getElementById("data").innerHTML = data;
         // generate selections for different categories
         addSelections(options);
 
         // if data exists at this point, calc and draw statistics
         if (data.length > 0) {
-            updateStatistics();
+            updateView(dnow.getFullYear());
         }
         
+        // button callbacks
         $("#addbutton").click(function validateForm() {
             ptime = Date().toString();
             purchase = document.forms["input_sheet"]["purchase"].value;
@@ -81,7 +81,7 @@
             selection = document.getElementById("selection")["value"];
 
             addPurchase(purchase, price, selection, ptime);
-            updateStatistics();
+            updateView(dnow.getFullYear());
         });
 
         $("#randombutton").click(function validateForm() {
@@ -97,7 +97,7 @@
              // insert purchase
              addPurchase("random", rndprice, document.getElementById("selection")[rndselection]["value"], rnddate);
           }
-          updateStatistics();
+          updateView(dnow.getFullYear());
         });
         
         function addPurchase(purchase, price, selection, datetime) {
@@ -106,29 +106,30 @@
             }
         }
         
-        function updateStatistics(){
-            printPurchases();
-            calcTotalSpending();
-            calcMonthlySpendins();
+        function updateView(year){
+          // this function updates the view, recalculates all too
+          printPurchases(data);
+          calcTotalSpending();
+          calcMonthlySpendins();
             
-            spendingstr = "";
-            if (data.length > 0) {
-               var categoryspendings = calcCategorySpendings(data);
-               var monthlyspendings = calcMonthlySpendins();
-               printCharts(categoryspendings, monthlyspendings);
+          spendingstr = "";
+          if (data.length > 0) {
+             var categoryspendings = calcCategorySpendings(data);
+             var monthlyspendings = calcMonthlySpendins();
+             printCharts(categoryspendings, monthlyspendings, year);
 
-               // form categorical spending string
-               for (var i=0;i<options.length;i++){
-                   spendingstr += options[i] + ": " + categoryspendings[i] + " ";
-               }
-            } else {
-               document.getElementById('chart').innerHTML = ""
-               document.getElementById('chart2').innerHTML = ""
-            }
+             // form categorical spending string
+             for (var i=0;i<options.length;i++){
+               spendingstr += options[i] + ": " + categoryspendings[i] + " ";
+             }
+          } else {
+             document.getElementById('chart').innerHTML = ""
+             document.getElementById('chart2').innerHTML = ""
+          }
 
-            // update categorical spending string
-            document.getElementById("categoryspending").innerHTML = spendingstr;
-         }
+          // update categorical spending string
+          document.getElementById("categoryspending").innerHTML = spendingstr;
+       }
 
         function calcMonthlySpendins(){
           var yearlyspendings = {}
@@ -200,7 +201,7 @@
             }
         }
        
-        function printCharts(categoryspendings, yearlyspendings){
+        function printCharts(categoryspendings, yearlyspendings, year){
             // parse categoryspendings
             var d = [['Category', 'Spending on category']];
             for (var i = 0; i < options.length; i++){
@@ -208,7 +209,7 @@
             }
             
             // parse monthlyspendings for selected year
-            var monthlyspendings = yearlyspendings[dnow.getFullYear()]
+            var monthlyspendings = yearlyspendings[year]
             var d2 = [["month", "spending"]]
             for (var key in monthlyspendings) {
                d2.push([monthnames[key], monthlyspendings[key]]) //parseInt(Number(key)+1)
@@ -237,29 +238,32 @@
             function selectYear() {
               // when user selects year set draw that years monthly graph
               var item = chart3.getSelection()[0];
-              var year = d3[item.row][0];
-              
+              var year = d3[item.row+1][0];
+              updateView(year)
             }
 
             chart.draw(piedata, {title: 'Categorical spending'});
-            chart2.draw(monthlydata, {title: 'Monthly spending'});
+            chart2.draw(monthlydata, {title: 'Monthly spending in ' + Number(year)});
             chart3.draw(yearlydata, {title: 'Spending by year'});
             google.visualization.events.addListener(chart3, 'select', selectYear); 
         }
                 
-        function printPurchases(){
+        function printPurchases(purchaselist){
             // Print the list of goodies bought
             var arraystr = "<table>";
-            arraystr += "<tr><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>"
-            for (var i=data.length-1;i>-1;i--){
+            arraystr += "<tr><th>#Ind</th><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>"
+            var len = purchaselist.length
+            for (var i=len-1;i>-1;i--){
                 arraystr += "<tr><td>"
-                arraystr += data[i][0];
+                arraystr += Number(len-i);
                 arraystr += "</td><td>"
-                arraystr += data[i][1];
+                arraystr += purchaselist[i][0];
                 arraystr += "</td><td>"
-                arraystr += data[i][2];
+                arraystr += purchaselist[i][1];
                 arraystr += "</td><td>"
-                arraystr += data[i][3];
+                arraystr += purchaselist[i][2];
+                arraystr += "</td><td>"
+                arraystr += purchaselist[i][3];
                 arraystr += "</td><td>"
                 arraystr += "<input id=\"rb" + i + "\" type=\"button\" value=\"Remove item\">";
                 arraystr += "</tr>";
@@ -268,10 +272,10 @@
             document.getElementById("data").innerHTML = arraystr;
             
             // add click-function to each remove-button
-            for (var i=0;i<data.length;i++){
+            for (var i=0;i<purchaselist.length;i++){
                 $("#rb" + i).click({p1:i}, function removeItem(event){
-                    data.splice(event.data.p1, 1);
-                    updateStatistics();
+                    purchaselist.splice(event.data.p1, 1);
+                    updateView(dnow.getFullYear());
                 });
             }
         }
