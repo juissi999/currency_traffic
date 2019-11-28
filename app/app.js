@@ -5,10 +5,10 @@ var currencyTraffic = function (canvasid, google, $) {
    $(canvasid).append("<h2>Add new purchase</h2>");
    $(canvasid).append("<form name=\"input_sheet\" method=\"post\">Purchase:" +
                     "<input type=\"text\" name=\"purchase\" value=\"milk\">" +
-                    "Price: <input type=\"text\" name=\"price\" value=\"5\">Type:" +
+                    " Price: <input type=\"text\" name=\"price\" value=\"5\"> Type:" +
                     "<select id=\"selection\"></select>" +
-                    "<input id=\"addbutton\" type=\"button\" value=\"Add\">" +
-                    "<input id=\"randombutton\" type=\"button\" value=\"Add 100 random purchases\">" +
+                    " <input id=\"addbutton\" type=\"button\" value=\"Add\">" +
+                    " <input id=\"randombutton\" type=\"button\" value=\"Add 100 random purchases\">" +
                     "</form>");
    $(canvasid).append("<h2>Spendings</h2>");
    $(canvasid).append("<p id=\"spending\"></p><p id=\"categoryspending\"></p>");
