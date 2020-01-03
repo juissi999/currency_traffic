@@ -1,0 +1,22 @@
+{
+  "name": "currency_traffic",
+  "version": "0.0.0",
+  "description": "A tool for following money spending\u001b\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juissi999/currency_traffic.git"
+  },
+  "keywords": [
+    "currency"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/juissi999/currency_traffic/issues"
+  },
+  "homepage": "https://github.com/juissi999/currency_traffic#readme"
+}
