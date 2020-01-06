@@ -7,26 +7,30 @@ var currencyTraffic = function (canvasid) {
     }
 
    // generate site structure, add elements to canvas
-   $(canvasid).append("<h1>Currency traffic <div id=\"time\"></div></h1>");
+   $(canvasid).append("<h1>Currency traffic <div id=\"time\" class=\"inlineitem\"></div></h1>");
    $(canvasid).append("<h2>New purchase</h2>");
-   $(canvasid).append("<form name=\"input_sheet\" method=\"post\">Purchase:" +
-                    "<input type=\"text\" name=\"purchase\" value=\"store\">" +
-                    " Price: <input type=\"text\" name=\"price\" value=\"10\"> Type:" +
+   $(canvasid).append("<button class=\"inlineitem\" id=\"shownewpb\">show</button><br>");
+   $(canvasid).append("<div id=\"newp_wrapper\">Name <input type=\"text\" id=\"purchase\" size=\"15\">" +
+                    " Price <input type=\"text\" id=\"price\" size=\"7\"><br>Type:" +
                     "<select id=\"selection\"></select>" +
-                    " <input id=\"addbutton\" type=\"button\" value=\"Add\">" +
-                    " <input id=\"randombutton\" type=\"button\" value=\"Add 100 random purchases\">" +
-                    "</form>");
+                    " <button id=\"addbutton\">Add</button>" +
+                    " <button id=\"randombutton\">Add 100 random purchases</button></div>");
    $(canvasid).append("<h2>Spendings</h2>");
-   $(canvasid).append("<p id=\"spending\"></p><p id=\"categoryspending\"></p>");
-   $(canvasid).append("<button class=\"blockbutton\" id=\"showchartsb\">Show charts</button>");
+   $(canvasid).append("<button class=\"inlineitem\" id=\"showspendingsb\">show</button><br>");
+   $(canvasid).append("<div id=\"spendings_wrapper\">" +
+                     "<p id=\"spending\"></p><p id=\"categoryspending\"></p></div>");
+   $(canvasid).append("<h2>Charts</h2>");
+   $(canvasid).append("<button class=\"inlineitem\" id=\"showchartsb\">show</button><br>");
    $(canvasid).append("<div id=\"charts_wrapper\" class=\"charts\">" +
                       "<div id=\"chart\" class=\"chart\"></div>" +
                       "<div id=\"chart2\" class=\"chart\"></div>" +
                       "<div id=\"chart3\" class=\"chart\"></div></div>")
-   $(canvasid).append("<button class=\"blockbutton\" id=\"cleardata\">Clear data</button>");
-   $(canvasid).append("<div id=\"rmdata\" class=\"hiddendiv\">Are you sure? All data will be removed permanently" +
-                      " <button id=\"data_final_rmb\">Clear all</button></div>");
+   $(canvasid).append("<h2>All purchases</h2>");
+   $(canvasid).append("<button class=\"inlineitem\" id=\"showpurchasesb\">show</button><br>");                      
    $(canvasid).append("<p id=\"datalist\"></p>")
+   $(canvasid).append("<button class=\"blockbutton\" id=\"cleardata\">Clear data</button>");
+   $(canvasid).append("<div id=\"rmdata\" class=\"hiddendiv\">Are you sure? All data will be removed permanently " +
+                      "<button id=\"data_final_rmb\">Clear all</button></div>");
 
    if (typeof(window.localStorage.ctdata) === "undefined") {
       // check if browser localstorage has data variable
@@ -63,30 +67,45 @@ var currencyTraffic = function (canvasid) {
    
    // button callbacks
    $("#showchartsb").click(() => {
-      $("#charts_wrapper").toggle(500)
-      
+      toggle_div("#charts_wrapper")
       // this updateview not necessarily needed but it is here to combat the
       // google charts bug that messes up drawing options if drawing to a
       // div that is hidden and then revealed
-      updateView(dnow.getFullYear());
+      updateView(dnow.getFullYear())
+   })
+
+   $("#shownewpb").click(() => {
+      toggle_div("#newp_wrapper")
+   })
+
+   $("#showspendingsb").click(() => {
+      toggle_div("#spendings_wrapper")
+   })
+
+   $("#showpurchasesb").click(() => {
+      toggle_div("#datalist")
    })
 
    $("#cleardata").click(() => {
-      $("#rmdata").toggle(500)
+      toggle_div("#rmdata")
    })
+
+   function toggle_div (id) {
+      $(id).toggle(500)
+   }
 
    $("#data_final_rmb").click(() => {
       localStorage.removeItem("ctdata")
       data = []
       updateView(dnow.getFullYear())
-      $("#rmdata").toggle(500)
+      toggle_div("#rmdata")
    })
 
 
    $("#addbutton").click(function validateForm() {
       ptime = new Date();
-      purchase = document.forms["input_sheet"]["purchase"].value;
-      price = parseInt(document.forms["input_sheet"]["price"].value);
+      purchase = $("#purchase").val();
+      price = parseInt($("#price").val());
       selection = document.getElementById("selection")["value"];
 
       addPurchase(purchase, price, selection, ptime);
