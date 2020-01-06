@@ -1,4 +1,11 @@
-var currencyTraffic = function (canvasid, google, $) {
+var currencyTraffic = function (canvasid) {
+
+   if (typeof(Storage) !== "undefined") {
+      // Code for localStorage/sessionStorage.
+    } else {
+      return $(canvasid).append("Sorry! No Web Storage support..")
+    }
+ //    window.localStorage
 
    // generate site structure, add elements to canvas
    $(canvasid).append("<h1>Currency traffic<div id=\"time\"></div></h1>");
@@ -19,14 +26,19 @@ var currencyTraffic = function (canvasid, google, $) {
                       "</div>" +
                       "<div id=\"charts\" style=\"display: table-row\">" +
                       "<div id=\"chart3\" style=\"width: 450px; height: 250px display:table-cell;\"></div>" +
-                      "</div></div><p id=\"data\"></p>");
+                      "</div></div><p id=\"datalist\"></p>");
 
-   // load google charts
-   google.charts.load('current', {'packages':['corechart']});
 
    // TODO:load stored datafile from database (or memory or browser, if possible)
 
-   var data = [];
+   if (typeof(window.localStorage.ctdata) === "undefined") {
+      // check if browser localstorage has data variable
+      localStorage.setItem("ctdata", JSON.stringify([]))
+      var data = []
+   } else {
+      var data = JSON.parse(localStorage.getItem("ctdata"))
+   }
+
    var dnow = new Date();
    var monthnames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -36,9 +48,15 @@ var currencyTraffic = function (canvasid, google, $) {
    // generate selections for different categories
    addSelections(options);
 
+   // load google charts
+   google.charts.load('current', {'packages':['corechart']});
+   google.charts.setOnLoadCallback(googlec_loaded);
+
+   function googlec_loaded() {
    // if data exists at this point, calc and draw statistics
    if (data.length > 0) {
       updateView(dnow.getFullYear());
+   }    
    }
    
    // button callbacks
@@ -63,10 +81,11 @@ var currencyTraffic = function (canvasid, google, $) {
       }
       updateView(dnow.getFullYear());
    });
-   
+
    function addPurchase(purchase, price, selection, datetime) {
       if (purchase.length > 0) {
-         data.push([purchase, price, selection, datetime]);
+         data.push([purchase, price, selection, datetime])
+         localStorage.setItem("ctdata", JSON.stringify(data))
       }
    }
    
@@ -185,7 +204,7 @@ var currencyTraffic = function (canvasid, google, $) {
          arraystr += "</tr>";
       }
       arraystr += "</table>"
-      document.getElementById("data").innerHTML = arraystr;
+      document.getElementById("datalist").innerHTML = arraystr;
       
       // add click-function to each remove-button
       for (var i=0;i<purchaselist.length;i++){

@@ -4,7 +4,8 @@
   "description": "A tool for following money spending\u001b\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack app/app.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,13 @@
   "bugs": {
     "url": "https://github.com/juissi999/currency_traffic/issues"
   },
-  "homepage": "https://github.com/juissi999/currency_traffic#readme"
+  "homepage": "https://github.com/juissi999/currency_traffic#readme",
+  "dependencies": {
+    "google-charts": "^2.0.0",
+    "jquery": "^3.4.1"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  }
 }
