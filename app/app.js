@@ -19,14 +19,11 @@ var currencyTraffic = function (canvasid) {
                     "</form>");
    $(canvasid).append("<h2>Spendings</h2>");
    $(canvasid).append("<p id=\"spending\"></p><p id=\"categoryspending\"></p>");
-   $(canvasid).append("<div style=\"width: 100%; display: table;\">" +
-                      "<div id=\"charts\" style=\"display: table-row\">" +
-                      "<div id=\"chart\" style=\"width: 450px; height: 250px; display:table-cell;\"></div>" +
-                      "<div id=\"chart2\" style=\"width: 450px; height: 250px display:table-cell;\"></div>" +
-                      "</div>" +
-                      "<div id=\"charts\" style=\"display: table-row\">" +
-                      "<div id=\"chart3\" style=\"width: 450px; height: 250px display:table-cell;\"></div>" +
-                      "</div></div><p id=\"datalist\"></p>");
+   $(canvasid).append("<div class=\"charts\">" +
+                      "<div id=\"chart\" class=\"chart\"></div>" +
+                      "<div id=\"chart2\" class=\"chart\"></div>" +
+                      "<div id=\"chart3\" class=\"chart\"></div>" +
+                      "</div><p id=\"datalist\"></p>");
 
 
    // TODO:load stored datafile from database (or memory or browser, if possible)
@@ -53,10 +50,10 @@ var currencyTraffic = function (canvasid) {
    google.charts.setOnLoadCallback(googlec_loaded);
 
    function googlec_loaded() {
-   // if data exists at this point, calc and draw statistics
-   if (data.length > 0) {
-      updateView(dnow.getFullYear());
-   }    
+      // if data exists at this point, calc and draw statistics
+      if (data.length > 0) {
+         updateView(dnow.getFullYear())
+      }
    }
    
    // button callbacks

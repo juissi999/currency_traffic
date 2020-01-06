@@ -1,8 +1,6 @@
 body {
     font-size: 20px;
     text-align: left;
-    padding: 20px 50px 50px 50px;
-    margin: 20px 75px;
 }
 
 h1 {
@@ -45,15 +43,24 @@ a:hover {
 }
 
 td, th{
-    padding: 0px 35px 0px 0px;
-    /*border-bottom: 1px solid #ddd;
-    #f2f2f2*/
-    
+    padding: 0px 10px 0px 5px;
 }
 
-tr:nth-child(even) {background-color: #d9f2e6;}
+tr:nth-child(even) {
+    background-color: #d9f2e6;
+}
 
 table {
     border-collapse: collapse;
     /*border: 1px solid black;*/
+}
+
+.charts {
+    display: inline-block;
+}
+
+.chart {
+    width: 450px;
+    height: 250px;
+    display: inline-block;
 }
