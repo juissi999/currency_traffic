@@ -22,32 +22,37 @@ var currencyTraffic = function (canvasid) {
    $(canvasid).append("<div id=\"charts_wrapper\" class=\"charts\">" +
                       "<div id=\"chart\" class=\"chart\"></div>" +
                       "<div id=\"chart2\" class=\"chart\"></div>" +
-                      "<div id=\"chart3\" class=\"chart\"></div>" +
-                      "</div><p id=\"datalist\"></p>");
-
-
-   // TODO:load stored datafile from database (or memory or browser, if possible)
+                      "<div id=\"chart3\" class=\"chart\"></div></div>")
+   $(canvasid).append("<button class=\"blockbutton\" id=\"cleardata\">Clear data</button>");
+   $(canvasid).append("<div id=\"rmdata\" class=\"hiddendiv\">Are you sure? All data will be removed permanently" +
+                      " <button id=\"data_final_rmb\">Clear all</button></div>");
+   $(canvasid).append("<p id=\"datalist\"></p>")
 
    if (typeof(window.localStorage.ctdata) === "undefined") {
       // check if browser localstorage has data variable
       localStorage.setItem("ctdata", JSON.stringify([]))
       var data = []
    } else {
-      var data = JSON.parse(localStorage.getItem("ctdata"))
+      var data_string = JSON.parse(localStorage.getItem("ctdata"))
+       data = []
+       data_string.forEach(element => {
+          // this is done because some elements might need processing (date e.g.)
+          data.push([element[0], element[1], element[2], new Date(element[3])])
+       });
    }
 
-   var dnow = new Date();
-   var monthnames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+   var dnow = new Date()
+   var monthnames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-   var options = ["food", "service", "leisure", "item", "rent", "insurance"];
-   $("#time").text(timestring(dnow));
+   var options = ["food", "service", "leisure", "item", "rent", "insurance"]
+   $("#time").text(timestring(dnow))
 
    // generate selections for different categories
-   addSelections(options);
+   addSelections(options)
 
    // load google charts
-   google.charts.load('current', {'packages':['corechart']});
-   google.charts.setOnLoadCallback(googlec_loaded);
+   google.charts.load('current', {'packages':['corechart']})
+   google.charts.setOnLoadCallback(googlec_loaded)
 
    function googlec_loaded() {
       // if data exists at this point, calc and draw statistics
@@ -60,6 +65,18 @@ var currencyTraffic = function (canvasid) {
    $("#showchartsb").click(() => {
       $("#charts_wrapper").toggle()
    })
+
+   $("#cleardata").click(() => {
+      $("#rmdata").toggle(500)
+   })
+
+   $("#data_final_rmb").click(() => {
+      localStorage.removeItem("ctdata")
+      data = []
+      updateView(dnow.getFullYear())
+      $("#rmdata").toggle(500)
+   })
+
 
    $("#addbutton").click(function validateForm() {
       ptime = Date().toString();

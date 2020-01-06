@@ -1,11 +1,11 @@
 body {
-    font-size: 20px;
+    font-size: 18px;
+    font-family: 'Open Sans', sans-serif;
     text-align: left;
 }
 
 h1 {
     color: #339966;
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 24px;
     font-weight: 300;
     line-height: 40px;
@@ -14,7 +14,6 @@ h1 {
 
 h2 {
     color: #339966;
-    font-family: 'Open Sans', sans-serif;
     font-size: 20px;
     font-weight: 300;
     line-height: 32px;
@@ -69,6 +68,10 @@ table {
 .blockbutton {
     display:block;
     margin: 0 0 10px;
+}
+
+.hiddendiv {
+    display:none;
 }
 
 #time {
