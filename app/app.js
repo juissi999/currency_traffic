@@ -209,8 +209,9 @@ var currencyTraffic = function (canvasid) {
       // add click-function to each remove-button
       for (var i=0;i<purchaselist.length;i++){
          $("#rb" + i).click({p1:i}, function removeItem(event){
-            purchaselist.splice(event.data.p1, 1);
-            updateView(dnow.getFullYear());
+            purchaselist.splice(event.data.p1, 1)
+            updateView(dnow.getFullYear())
+            localStorage.setItem("ctdata", JSON.stringify(purchaselist))
          });
       }
    }
