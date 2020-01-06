@@ -63,7 +63,12 @@ var currencyTraffic = function (canvasid) {
    
    // button callbacks
    $("#showchartsb").click(() => {
-      $("#charts_wrapper").toggle()
+      $("#charts_wrapper").toggle(500)
+      
+      // this updateview not necessarily needed but it is here to combat the
+      // google charts bug that messes up drawing options if drawing to a
+      // div that is hidden and then revealed
+      updateView(dnow.getFullYear());
    })
 
    $("#cleardata").click(() => {
@@ -79,7 +84,7 @@ var currencyTraffic = function (canvasid) {
 
 
    $("#addbutton").click(function validateForm() {
-      ptime = Date().toString();
+      ptime = new Date();
       purchase = document.forms["input_sheet"]["purchase"].value;
       price = parseInt(document.forms["input_sheet"]["price"].value);
       selection = document.getElementById("selection")["value"];
@@ -209,19 +214,19 @@ var currencyTraffic = function (canvasid) {
       var len = purchaselist.length
       for (var i=len-1;i>-1;i--){
          arraystr += "<tr><td>"
-         arraystr += purchaselist[i][0];
+         arraystr += purchaselist[i][0]
          arraystr += "</td><td>"
-         arraystr += purchaselist[i][1];
+         arraystr += purchaselist[i][1]
          arraystr += "</td><td>"
-         arraystr += purchaselist[i][2];
+         arraystr += purchaselist[i][2]
          arraystr += "</td><td>"
-         arraystr += purchaselist[i][3];
+         arraystr += purchaselist[i][3].toLocaleDateString('fi')
          arraystr += "</td><td>"
-         arraystr += "<input id=\"rb" + i + "\" type=\"button\" value=\"Remove\">";
-         arraystr += "</tr>";
+         arraystr += "<input id=\"rb" + i + "\" type=\"button\" class=\"rmitembutton\" value=\"del\">"
+         arraystr += "</tr>"
       }
       arraystr += "</table>"
-      document.getElementById("datalist").innerHTML = arraystr;
+      document.getElementById("datalist").innerHTML = arraystr
       
       // add click-function to each remove-button
       for (var i=0;i<purchaselist.length;i++){
@@ -235,8 +240,8 @@ var currencyTraffic = function (canvasid) {
 
 
    function generateRandomPurchase(selectioncount) {
-      var rnddate = new Date();
-      rnddate.setTime(Math.round(rnddate.getTime()*Math.random()));
+      var rnddate = new Date()
+      rnddate.setTime(Math.round(rnddate.getTime()*Math.random()))
       var rndprice = Math.floor((Math.random() * 100) + 1)
       var rndselection = Math.floor((Math.random() * selectioncount))
       return [rnddate, rndprice, rndselection]
