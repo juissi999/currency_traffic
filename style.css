@@ -6,19 +6,19 @@ body {
 h1 {
     color: #339966;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 34px;
+    font-size: 24px;
     font-weight: 300;
     line-height: 40px;
-    margin: 0 0 16px;
+    margin: 0 0 5px;
 }
 
 h2 {
     color: #339966;
     font-family: 'Open Sans', sans-serif;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 300;
     line-height: 32px;
-    margin: 14px 0 14px;
+    margin: 5px 0 5px;
 }
 
 p {
@@ -27,7 +27,7 @@ p {
     font-size: 15px;
     font-weight: 400;
     line-height: 24px;
-    margin: 0 0 14px;
+    margin: 0 0 10px;
 }
 
 a { 
@@ -51,6 +51,7 @@ tr:nth-child(even) {
 }
 
 table {
+    width:100%;
     border-collapse: collapse;
     /*border: 1px solid black;*/
 }
@@ -63,4 +64,13 @@ table {
     width: 320px;
     height: 250px;
     display: inline-block;
+}
+
+.blockbutton {
+    display:block;
+    margin: 0 0 10px;
+}
+
+#time {
+    display:inline-block;
 }

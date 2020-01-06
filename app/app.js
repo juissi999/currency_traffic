@@ -3,23 +3,23 @@ var currencyTraffic = function (canvasid) {
    if (typeof(Storage) !== "undefined") {
       // Code for localStorage/sessionStorage.
     } else {
-      return $(canvasid).append("Sorry! No Web Storage support..")
+      return $(canvasid).append("Sorry! Your browser has no Web Storage support..")
     }
- //    window.localStorage
 
    // generate site structure, add elements to canvas
-   $(canvasid).append("<h1>Currency traffic<div id=\"time\"></div></h1>");
-   $(canvasid).append("<h2>Add new purchase</h2>");
+   $(canvasid).append("<h1>Currency traffic <div id=\"time\"></div></h1>");
+   $(canvasid).append("<h2>New purchase</h2>");
    $(canvasid).append("<form name=\"input_sheet\" method=\"post\">Purchase:" +
-                    "<input type=\"text\" name=\"purchase\" value=\"milk\">" +
-                    " Price: <input type=\"text\" name=\"price\" value=\"5\"> Type:" +
+                    "<input type=\"text\" name=\"purchase\" value=\"store\">" +
+                    " Price: <input type=\"text\" name=\"price\" value=\"10\"> Type:" +
                     "<select id=\"selection\"></select>" +
                     " <input id=\"addbutton\" type=\"button\" value=\"Add\">" +
                     " <input id=\"randombutton\" type=\"button\" value=\"Add 100 random purchases\">" +
                     "</form>");
    $(canvasid).append("<h2>Spendings</h2>");
    $(canvasid).append("<p id=\"spending\"></p><p id=\"categoryspending\"></p>");
-   $(canvasid).append("<div class=\"charts\">" +
+   $(canvasid).append("<button class=\"blockbutton\" id=\"showchartsb\">Show charts</button>");
+   $(canvasid).append("<div id=\"charts_wrapper\" class=\"charts\">" +
                       "<div id=\"chart\" class=\"chart\"></div>" +
                       "<div id=\"chart2\" class=\"chart\"></div>" +
                       "<div id=\"chart3\" class=\"chart\"></div>" +
@@ -40,7 +40,7 @@ var currencyTraffic = function (canvasid) {
    var monthnames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
    var options = ["food", "service", "leisure", "item", "rent", "insurance"];
-   $("#time").text("Today is " + dnow.getDate() + "." + (dnow.getMonth() + 1)  + "." + dnow.getFullYear());
+   $("#time").text(timestring(dnow));
 
    // generate selections for different categories
    addSelections(options);
@@ -57,6 +57,10 @@ var currencyTraffic = function (canvasid) {
    }
    
    // button callbacks
+   $("#showchartsb").click(() => {
+      $("#charts_wrapper").toggle()
+   })
+
    $("#addbutton").click(function validateForm() {
       ptime = Date().toString();
       purchase = document.forms["input_sheet"]["purchase"].value;
@@ -104,6 +108,7 @@ var currencyTraffic = function (canvasid) {
       } else {
             document.getElementById('chart').innerHTML = ""
             document.getElementById('chart2').innerHTML = ""
+            document.getElementById('chart3').innerHTML = ""
       }
 
       // update categorical spending string
@@ -183,12 +188,10 @@ var currencyTraffic = function (canvasid) {
    function printPurchases(purchaselist){
       // Print the list of goodies bought
       var arraystr = "<table>";
-      arraystr += "<tr><th>#Ind</th><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>"
+      arraystr += "<tr><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>"
       var len = purchaselist.length
       for (var i=len-1;i>-1;i--){
          arraystr += "<tr><td>"
-         arraystr += Number(len-i);
-         arraystr += "</td><td>"
          arraystr += purchaselist[i][0];
          arraystr += "</td><td>"
          arraystr += purchaselist[i][1];
@@ -197,7 +200,7 @@ var currencyTraffic = function (canvasid) {
          arraystr += "</td><td>"
          arraystr += purchaselist[i][3];
          arraystr += "</td><td>"
-         arraystr += "<input id=\"rb" + i + "\" type=\"button\" value=\"Remove item\">";
+         arraystr += "<input id=\"rb" + i + "\" type=\"button\" value=\"Remove\">";
          arraystr += "</tr>";
       }
       arraystr += "</table>"
@@ -272,6 +275,6 @@ var currencyTraffic = function (canvasid) {
    }
 
    function timestring(dnow) {
-      return "Today is " + dnow.getDate() + "." + (dnow.getMonth() + 1)  + "." + dnow.getFullYear();
+      return dnow.getDate() + "." + (dnow.getMonth() + 1)  + "." + dnow.getFullYear();
    }
 }
