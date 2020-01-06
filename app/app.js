@@ -174,9 +174,9 @@ var currencyTraffic = function (canvasid) {
          updateView(year);
       }
 
-      chart.draw(piedata, {title: 'Categorical spending'});
-      chart2.draw(monthlydata, {title: 'Monthly spending in ' + Number(year)});
-      chart3.draw(yearlydata, {title: 'Spending by year'});
+      chart.draw(piedata, {title: 'Categorical spending', chartArea:{width: '100%', height: '75%'}});
+      chart2.draw(monthlydata, {title: 'Monthly spending in ' + Number(year), chartArea:{width: '90%', height: '75%'}});
+      chart3.draw(yearlydata, {title: 'Spending by year', chartArea:{width: '90%', height: '75%'}});
       google.visualization.events.addListener(chart3, 'select', selectYear); 
    }
 
