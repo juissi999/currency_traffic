@@ -28,30 +28,48 @@ var currencyTraffic = function (canvasid) {
    $(canvasid).append("<div id=\"cleardata_wrapper\" class=\"hiddendiv\">Are you sure? All data will be removed permanently " +
                       "<button id=\"data_final_rmb\">Clear all</button></div>");
 
+   var data = []
    if (typeof(window.localStorage.ctdata) === "undefined") {
       // check if browser localstorage has data variable
       localStorage.setItem("ctdata", JSON.stringify([]))
-      var data = []
+      
    } else {
       var data_string = JSON.parse(localStorage.getItem("ctdata"))
-       data = []
        data_string.forEach(element => {
           // this is done because some elements might need processing (date e.g.)
           data.push([element[0], element[1], element[2], new Date(element[3])])
        })
    }
 
-   // var show_partials_buttons = {"#chartsb":["#charts_wrapper", 1],
-   //                              "#newpb":["#newp_wrapper", 1],
-   //                              "#statsb": ["#stats_wrapper", 1],
-   //                              "#purchaselistb": ["#datalist", 1],
-   //                              "#cleardatab":["#cleardata_wrapper", 1]
-   //                            }
+   const showbmap = {"#newpb":"#newp_wrapper",
+                     "#statsb":"#stats_wrapper",
+                     "#chartsb":"#charts_wrapper",
+                     "#purchaselistb":"#datalist",
+                     "#cleardatab":"#cleardata_wrapper"}
 
-   // if (typeof(window.localStorage.ct_show_options) === "undefined") {
-   //    // first time in site
-   //    localStorage.setItem("ctdata", JSON.stringify({}))
-   // }
+   var showb_states = {
+      "#newpb": 0,
+      "#chartsb": 0,
+      "#statsb":  0,
+      "#purchaselistb": 0,
+      "#cleardatab": 0
+   }
+
+   if (typeof(window.localStorage.ct_show_options) !== "undefined") {
+      // been there before, load my show options
+      showb_states = JSON.parse(localStorage.getItem("ct_show_options"))
+
+      for (key in showb_states) {
+         if(showb_states[key] == 0) {
+            toggle_div(key)
+         }
+      }
+   }
+
+   function save_showb_state() {
+      localStorage.setItem("ct_show_options", JSON.stringify(showb_states))
+   }
+
 
    var dnow = new Date()
    var monthnames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -75,16 +93,16 @@ var currencyTraffic = function (canvasid) {
    
    //document.getElementById("newp").style.cursor = "pointer"; 
    $("#newpb").click((e) => {
-      toggle_div(e, "#newp_wrapper")
+      showbclick_callback(e)
    })
 
    $("#statsb").click((e) => {
-      toggle_div(e, "#stats_wrapper")
+      showbclick_callback(e)
    })
 
    // button callbacks
    $("#chartsb").click((e) => {
-      toggle_div(e, "#charts_wrapper")
+      showbclick_callback(e)
       // this updateview not necessarily needed but it is here to combat the
       // google charts bug that messes up drawing options if drawing to a
       // div that is hidden and then revealed
@@ -92,34 +110,43 @@ var currencyTraffic = function (canvasid) {
    })
 
    $("#purchaselistb").click((e) => {
-      toggle_div(e, "#datalist")
+      showbclick_callback(e)
    })
 
    $("#cleardatab").click((e) => {
-      toggle_div(e, "#cleardata_wrapper")
+      showbclick_callback(e)
    })
 
-   function toggle_div (e, id) {
-      // h is the elements handle, id is the target to show div id
+   function showbclick_callback(e) {
+      // callback that gets elements id and calls divtoggle
+      elid = "#" + e.target.id
+      toggle_div(elid)
+      // save show button states to local variable
+      showb_states[elid] = 1 - showb_states[elid]
+      save_showb_state()
+   }
+
+   function toggle_div (element) {
+      // element is the showbutton id that is toggled
+      // change text and reveal corresponding div
 
       // change the buttons polarity
-      var father_element = "#" + e.target.id
-      var divtitle = $(father_element).html()
+      var divtitle = $(element).html()
       if (divtitle.slice(-1) == "+") {
-         $(father_element).html(divtitle.slice(0, -1) + "-")
+         $(element).html(divtitle.slice(0, -1) + "-")
       } else {
-         $(father_element).html(divtitle.slice(0, -1) + "+")
+         $(element).html(divtitle.slice(0, -1) + "+")
       }
-      $(id).toggle(300)
+      // map element to corresponding div
+      $(showbmap[element]).toggle()
    }
 
    $("#data_final_rmb").click(() => {
       localStorage.removeItem("ctdata")
       data = []
       updateView(dnow.getFullYear())
-      toggle_div("#rmdata_wrapper")
+      toggle_div("#cleardatab")
    })
-
 
    $("#addbutton").click(function validateForm() {
       ptime = new Date()
