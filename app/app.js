@@ -24,8 +24,8 @@ var currencyTraffic = function (canvasid) {
                       "<div id=\"chart3\" class=\"chart\"></div></div>")
    $(canvasid).append("<button class=\"section_toggle\" id=\"purchaselistb\">Purchases -</button><br>");                      
    $(canvasid).append("<div id=\"datalist\"></div>")
-   $(canvasid).append("<button class=\"section_toggle\" id=\"cleardatab\">Clear data +</button>");
-   $(canvasid).append("<div id=\"cleardata_wrapper\" class=\"hiddendiv\">Are you sure? All data will be removed permanently " +
+   $(canvasid).append("<button class=\"section_toggle\" id=\"cleardatab\">Clear data -</button>");
+   $(canvasid).append("<div id=\"cleardata_wrapper\">Are you sure? All data will be removed permanently " +
                       "<button id=\"data_final_rmb\">Clear all</button></div>");
 
    var data = []
@@ -48,7 +48,7 @@ var currencyTraffic = function (canvasid) {
                      "#cleardatab":"#cleardata_wrapper"}
 
    var showb_states = {
-      "#newpb": 0,
+      "#newpb": 1,
       "#chartsb": 0,
       "#statsb":  0,
       "#purchaselistb": 0,
@@ -58,12 +58,12 @@ var currencyTraffic = function (canvasid) {
    if (typeof(window.localStorage.ct_show_options) !== "undefined") {
       // been there before, load my show options
       showb_states = JSON.parse(localStorage.getItem("ct_show_options"))
+   }
 
-      // set button states to what they had previous session
-      for (key in showb_states) {
-         if(showb_states[key] == 0) {
-            toggle_div(key)
-         }
+   // set button states to what they had previous session or initialize if not on localstorage
+   for (key in showb_states) {
+      if(showb_states[key] == 0) {
+         toggle_div(key)
       }
    }
 
