@@ -8,21 +8,21 @@ var currencyTraffic = function (canvasid) {
 
    // generate site structure, add elements to canvas
    $(canvasid).append("<h1>Currency traffic <div id=\"time\" class=\"inlineitem\"></div></h1>");
-   $(canvasid).append("<button class=\"section_toggle\" id=\"newpb\">New purchase +</button><br>");
+   $(canvasid).append("<button class=\"section_toggle\" id=\"newpb\">New purchase -</button><br>");
    $(canvasid).append("<div id=\"newp_wrapper\">Name <input type=\"text\" id=\"purchase\" size=\"15\">" +
                     " Price <input type=\"text\" id=\"price\" size=\"7\"><br>Type:" +
                     "<select id=\"selection\"></select>" +
                     " <button id=\"addbutton\">Add</button>" +
                     " <button id=\"randombutton\">Add 100 random purchases</button></div>");
-   $(canvasid).append("<button class=\"section_toggle\" id=\"statsb\">Statistics +</button><br>");
+   $(canvasid).append("<button class=\"section_toggle\" id=\"statsb\">Statistics -</button><br>");
    $(canvasid).append("<div id=\"stats_wrapper\">" +
                      "<p id=\"spending\"></p><p id=\"categoryspending\"></p></div>");
-   $(canvasid).append("<button class=\"section_toggle\" id=\"chartsb\">Charts +</button><br>");
+   $(canvasid).append("<button class=\"section_toggle\" id=\"chartsb\">Charts -</button><br>");
    $(canvasid).append("<div id=\"charts_wrapper\" class=\"charts\">" +
                       "<div id=\"chart\" class=\"chart\"></div>" +
                       "<div id=\"chart2\" class=\"chart\"></div>" +
                       "<div id=\"chart3\" class=\"chart\"></div></div>")
-   $(canvasid).append("<button class=\"section_toggle\" id=\"purchaselistb\">Purchases +</button><br>");                      
+   $(canvasid).append("<button class=\"section_toggle\" id=\"purchaselistb\">Purchases -</button><br>");                      
    $(canvasid).append("<div id=\"datalist\"></div>")
    $(canvasid).append("<button class=\"section_toggle\" id=\"cleardatab\">Clear data +</button>");
    $(canvasid).append("<div id=\"cleardata_wrapper\" class=\"hiddendiv\">Are you sure? All data will be removed permanently " +
@@ -74,32 +74,42 @@ var currencyTraffic = function (canvasid) {
    }
    
    //document.getElementById("newp").style.cursor = "pointer"; 
-   $("#newpb").click(() => {
-      toggle_div("#newp_wrapper")
+   $("#newpb").click((e) => {
+      toggle_div(e, "#newp_wrapper")
    })
 
-   $("#statsb").click(() => {
-      toggle_div("#stats_wrapper")
+   $("#statsb").click((e) => {
+      toggle_div(e, "#stats_wrapper")
    })
 
    // button callbacks
-   $("#chartsb").click(() => {
-      toggle_div("#charts_wrapper")
+   $("#chartsb").click((e) => {
+      toggle_div(e, "#charts_wrapper")
       // this updateview not necessarily needed but it is here to combat the
       // google charts bug that messes up drawing options if drawing to a
       // div that is hidden and then revealed
       updateView(dnow.getFullYear())
    })
 
-   $("#purchaselistb").click(() => {
-      toggle_div("#datalist")
+   $("#purchaselistb").click((e) => {
+      toggle_div(e, "#datalist")
    })
 
-   $("#cleardatab").click(() => {
-      toggle_div("#cleardata_wrapper")
+   $("#cleardatab").click((e) => {
+      toggle_div(e, "#cleardata_wrapper")
    })
 
-   function toggle_div (id) {
+   function toggle_div (e, id) {
+      // h is the elements handle, id is the target to show div id
+
+      // change the buttons polarity
+      var father_element = "#" + e.target.id
+      var divtitle = $(father_element).html()
+      if (divtitle.slice(-1) == "+") {
+         $(father_element).html(divtitle.slice(0, -1) + "-")
+      } else {
+         $(father_element).html(divtitle.slice(0, -1) + "+")
+      }
       $(id).toggle(300)
    }
 
@@ -147,7 +157,7 @@ var currencyTraffic = function (canvasid) {
    function updateView(year){
       // this function updates the view, recalculates all too
       printPurchases(data)
-      document.getElementById("spending").innerHTML = "Total: " + calcTotalSpending(data)
+      document.getElementById("spending").innerHTML = "Transactions: " + data.length + " total spending: " + calcTotalSpending(data)
          
       spendingstr = "";
       if (data.length > 0) {
