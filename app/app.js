@@ -59,6 +59,7 @@ var currencyTraffic = function (canvasid) {
       // been there before, load my show options
       showb_states = JSON.parse(localStorage.getItem("ct_show_options"))
 
+      // set button states to what they had previous session
       for (key in showb_states) {
          if(showb_states[key] == 0) {
             toggle_div(key)
@@ -146,6 +147,8 @@ var currencyTraffic = function (canvasid) {
       data = []
       updateView(dnow.getFullYear())
       toggle_div("#cleardatab")
+      showb_states["#cleardatab"] = 1 - showb_states["#cleardatab"]
+      save_showb_state()
    })
 
    $("#addbutton").click(function validateForm() {
