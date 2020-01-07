@@ -8,28 +8,24 @@ var currencyTraffic = function (canvasid) {
 
    // generate site structure, add elements to canvas
    $(canvasid).append("<h1>Currency traffic <div id=\"time\" class=\"inlineitem\"></div></h1>");
-   $(canvasid).append("<h2>New purchase</h2>");
-   $(canvasid).append("<button class=\"inlineitem\" id=\"shownewpb\">show</button><br>");
+   $(canvasid).append("<button class=\"section_toggle\" id=\"newpb\">New purchase +</button><br>");
    $(canvasid).append("<div id=\"newp_wrapper\">Name <input type=\"text\" id=\"purchase\" size=\"15\">" +
                     " Price <input type=\"text\" id=\"price\" size=\"7\"><br>Type:" +
                     "<select id=\"selection\"></select>" +
                     " <button id=\"addbutton\">Add</button>" +
                     " <button id=\"randombutton\">Add 100 random purchases</button></div>");
-   $(canvasid).append("<h2>Spendings</h2>");
-   $(canvasid).append("<button class=\"inlineitem\" id=\"showspendingsb\">show</button><br>");
-   $(canvasid).append("<div id=\"spendings_wrapper\">" +
+   $(canvasid).append("<button class=\"section_toggle\" id=\"statsb\">Statistics +</button><br>");
+   $(canvasid).append("<div id=\"stats_wrapper\">" +
                      "<p id=\"spending\"></p><p id=\"categoryspending\"></p></div>");
-   $(canvasid).append("<h2>Charts</h2>");
-   $(canvasid).append("<button class=\"inlineitem\" id=\"showchartsb\">show</button><br>");
+   $(canvasid).append("<button class=\"section_toggle\" id=\"chartsb\">Charts +</button><br>");
    $(canvasid).append("<div id=\"charts_wrapper\" class=\"charts\">" +
                       "<div id=\"chart\" class=\"chart\"></div>" +
                       "<div id=\"chart2\" class=\"chart\"></div>" +
                       "<div id=\"chart3\" class=\"chart\"></div></div>")
-   $(canvasid).append("<h2>All purchases</h2>");
-   $(canvasid).append("<button class=\"inlineitem\" id=\"showpurchasesb\">show</button><br>");                      
-   $(canvasid).append("<p id=\"datalist\"></p>")
-   $(canvasid).append("<button class=\"blockbutton\" id=\"cleardata\">Clear data</button>");
-   $(canvasid).append("<div id=\"rmdata\" class=\"hiddendiv\">Are you sure? All data will be removed permanently " +
+   $(canvasid).append("<button class=\"section_toggle\" id=\"purchaselistb\">Purchases +</button><br>");                      
+   $(canvasid).append("<div id=\"datalist\"></div>")
+   $(canvasid).append("<button class=\"section_toggle\" id=\"cleardatab\">Clear data +</button>");
+   $(canvasid).append("<div id=\"cleardata_wrapper\" class=\"hiddendiv\">Are you sure? All data will be removed permanently " +
                       "<button id=\"data_final_rmb\">Clear all</button></div>");
 
    if (typeof(window.localStorage.ctdata) === "undefined") {
@@ -42,8 +38,20 @@ var currencyTraffic = function (canvasid) {
        data_string.forEach(element => {
           // this is done because some elements might need processing (date e.g.)
           data.push([element[0], element[1], element[2], new Date(element[3])])
-       });
+       })
    }
+
+   // var show_partials_buttons = {"#chartsb":["#charts_wrapper", 1],
+   //                              "#newpb":["#newp_wrapper", 1],
+   //                              "#statsb": ["#stats_wrapper", 1],
+   //                              "#purchaselistb": ["#datalist", 1],
+   //                              "#cleardatab":["#cleardata_wrapper", 1]
+   //                            }
+
+   // if (typeof(window.localStorage.ct_show_options) === "undefined") {
+   //    // first time in site
+   //    localStorage.setItem("ctdata", JSON.stringify({}))
+   // }
 
    var dnow = new Date()
    var monthnames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -65,8 +73,17 @@ var currencyTraffic = function (canvasid) {
       }
    }
    
+   //document.getElementById("newp").style.cursor = "pointer"; 
+   $("#newpb").click(() => {
+      toggle_div("#newp_wrapper")
+   })
+
+   $("#statsb").click(() => {
+      toggle_div("#stats_wrapper")
+   })
+
    // button callbacks
-   $("#showchartsb").click(() => {
+   $("#chartsb").click(() => {
       toggle_div("#charts_wrapper")
       // this updateview not necessarily needed but it is here to combat the
       // google charts bug that messes up drawing options if drawing to a
@@ -74,42 +91,38 @@ var currencyTraffic = function (canvasid) {
       updateView(dnow.getFullYear())
    })
 
-   $("#shownewpb").click(() => {
-      toggle_div("#newp_wrapper")
-   })
-
-   $("#showspendingsb").click(() => {
-      toggle_div("#spendings_wrapper")
-   })
-
-   $("#showpurchasesb").click(() => {
+   $("#purchaselistb").click(() => {
       toggle_div("#datalist")
    })
 
-   $("#cleardata").click(() => {
-      toggle_div("#rmdata")
+   $("#cleardatab").click(() => {
+      toggle_div("#cleardata_wrapper")
    })
 
    function toggle_div (id) {
-      $(id).toggle(500)
+      $(id).toggle(300)
    }
 
    $("#data_final_rmb").click(() => {
       localStorage.removeItem("ctdata")
       data = []
       updateView(dnow.getFullYear())
-      toggle_div("#rmdata")
+      toggle_div("#rmdata_wrapper")
    })
 
 
    $("#addbutton").click(function validateForm() {
-      ptime = new Date();
-      purchase = $("#purchase").val();
-      price = parseInt($("#price").val());
-      selection = document.getElementById("selection")["value"];
+      ptime = new Date()
+      purchase = $("#purchase").val()
+      price = parseInt($("#price").val())
+      selection = document.getElementById("selection")["value"]
 
-      addPurchase(purchase, price, selection, ptime);
-      updateView(dnow.getFullYear());
+      // format datafields -> faster for user to put next item
+      $("#purchase").val("")
+      $("#price").val("")
+
+      addPurchase(purchase, price, selection, ptime)
+      updateView(dnow.getFullYear())
    });
 
    $("#randombutton").click(function validateForm() {
@@ -119,9 +132,9 @@ var currencyTraffic = function (canvasid) {
          const [rnddate, rndprice, rndselection] = generateRandomPurchase(document.getElementById("selection").length)
 
          // insert purchase
-         addPurchase("random", rndprice, document.getElementById("selection")[rndselection]["value"], rnddate);
+         addPurchase("random", rndprice, document.getElementById("selection")[rndselection]["value"], rnddate)
       }
-      updateView(dnow.getFullYear());
+      updateView(dnow.getFullYear())
    });
 
    function addPurchase(purchase, price, selection, datetime) {
@@ -133,18 +146,18 @@ var currencyTraffic = function (canvasid) {
    
    function updateView(year){
       // this function updates the view, recalculates all too
-      printPurchases(data);
-      document.getElementById("spending").innerHTML = "Total: " + calcTotalSpending(data);
+      printPurchases(data)
+      document.getElementById("spending").innerHTML = "Total: " + calcTotalSpending(data)
          
       spendingstr = "";
       if (data.length > 0) {
-            var categoryspendings = calcCategorySpendings(data);
-            var monthlyspendings = calcYearlySpendins(data, dnow);
-            printCharts(categoryspendings, monthlyspendings, year);
+            var categoryspendings = calcCategorySpendings(data)
+            var monthlyspendings = calcYearlySpendins(data, dnow)
+            printCharts(categoryspendings, monthlyspendings, year)
 
             // form categorical spending string
             for (var i=0;i<options.length;i++){
-            spendingstr += options[i] + ": " + categoryspendings[i] + " ";
+            spendingstr += options[i] + ": " + categoryspendings[i] + " "
             }
       } else {
             document.getElementById('chart').innerHTML = ""
@@ -153,77 +166,77 @@ var currencyTraffic = function (canvasid) {
       }
 
       // update categorical spending string
-      document.getElementById("categoryspending").innerHTML = spendingstr;
+      document.getElementById("categoryspending").innerHTML = spendingstr
    }
    
    function calcCategorySpendings(inputdata){
       // Calculate categorical spendings for each option for input values
-      var categoryspendings = Array(options.length).fill(0);
+      var categoryspendings = Array(options.length).fill(0)
       for (var i=0;i<options.length;i++){
          for (j=0;j<data.length;j++) {
                if (options[i].valueOf() == inputdata[j][2].valueOf()) {
-                  categoryspendings[i] += inputdata[j][1];
+                  categoryspendings[i] += inputdata[j][1]
                }
          }
       }
-      return categoryspendings;
+      return categoryspendings
    }
          
    function addSelections(options){
       //Create and append the options
       for (var i = 0; i < options.length; i++) {
          var option = document.createElement("option");
-         option.value = options[i];
-         option.text = options[i];
-         document.getElementById("selection").appendChild(option);
+         option.value = options[i]
+         option.text = options[i]
+         document.getElementById("selection").appendChild(option)
       }
    }
    
    function printCharts(categoryspendings, yearlyspendings, year){
       // parse categoryspendings
-      var d = [['Category', 'Spending on category']];
+      var d = [['Category', 'Spending on category']]
       for (var i = 0; i < options.length; i++){
-         d.push([options[i], categoryspendings[i]]);
+         d.push([options[i], categoryspendings[i]])
       }
       
       // parse monthlyspendings for selected year
-      var monthlyspendings = yearlyspendings[year];
-      var d2 = [["month", "spending"]];
+      var monthlyspendings = yearlyspendings[year]
+      var d2 = [["month", "spending"]]
       for (var key in monthlyspendings) {
-         d2.push([monthnames[key], monthlyspendings[key]]); //parseInt(Number(key)+1)
+         d2.push([monthnames[key], monthlyspendings[key]]) //parseInt(Number(key)+1)
       }
       
       // parse yearlyspendings
-      var yearlyspending = 0;
-      var d3 = [["year", "spending"]];
+      var yearlyspending = 0
+      var d3 = [["year", "spending"]]
       for (var key in yearlyspendings) {
          // loop and sum all monthly spendings across year
          for (var mkey in yearlyspendings[key]) {
-            yearlyspending += yearlyspendings[key][mkey];
+            yearlyspending += yearlyspendings[key][mkey]
          }
-         d3.push([key, yearlyspending]);
-         yearlyspending = 0;
+         d3.push([key, yearlyspending])
+         yearlyspending = 0
       }
       
-      var piedata = google.visualization.arrayToDataTable(d);
-      var monthlydata = google.visualization.arrayToDataTable(d2);
-      var yearlydata = google.visualization.arrayToDataTable(d3);
+      var piedata = google.visualization.arrayToDataTable(d)
+      var monthlydata = google.visualization.arrayToDataTable(d2)
+      var yearlydata = google.visualization.arrayToDataTable(d3)
       
-      var chart = new google.visualization.PieChart(document.getElementById('chart'));
-      var chart2 = new google.visualization.LineChart(document.getElementById('chart2'));
-      var chart3 = new google.visualization.LineChart(document.getElementById('chart3'));
+      var chart = new google.visualization.PieChart(document.getElementById('chart'))
+      var chart2 = new google.visualization.LineChart(document.getElementById('chart2'))
+      var chart3 = new google.visualization.LineChart(document.getElementById('chart3'))
 
       function selectYear() {
          // when user selects year set draw that years monthly graph
-         var item = chart3.getSelection()[0];
-         var year = d3[item.row+1][0];
-         updateView(year);
+         var item = chart3.getSelection()[0]
+         var year = d3[item.row+1][0]
+         updateView(year)
       }
 
-      chart.draw(piedata, {title: 'Categorical spending', chartArea:{width: '100%', height: '75%'}});
-      chart2.draw(monthlydata, {title: 'Monthly spending in ' + Number(year), chartArea:{width: '90%', height: '75%'}});
-      chart3.draw(yearlydata, {title: 'Spending by year', chartArea:{width: '90%', height: '75%'}});
-      google.visualization.events.addListener(chart3, 'select', selectYear); 
+      chart.draw(piedata, {title: 'Categorical spending', chartArea:{width: '100%', height: '75%'}})
+      chart2.draw(monthlydata, {title: 'Monthly spending in ' + Number(year), chartArea:{width: '90%', height: '75%'}})
+      chart3.draw(yearlydata, {title: 'Spending by year', chartArea:{width: '90%', height: '75%'}})
+      google.visualization.events.addListener(chart3, 'select', selectYear)
    }
 
    function printPurchases(purchaselist){
@@ -257,7 +270,6 @@ var currencyTraffic = function (canvasid) {
       }
    }
 
-
    function generateRandomPurchase(selectioncount) {
       var rnddate = new Date()
       rnddate.setTime(Math.round(rnddate.getTime()*Math.random()))
@@ -274,34 +286,34 @@ var currencyTraffic = function (canvasid) {
       // moment with empty dicts.
       var oldestyear = dnow.getFullYear()
       for (i=0;i<data.length;i++) {
-      var ditem = new Date(data[i][3])
-      var year = ditem.getFullYear()
-      if (year < oldestyear) {
-         oldestyear = year
-      }
+         var ditem = new Date(data[i][3])
+         var year = ditem.getFullYear()
+         if (year < oldestyear) {
+            oldestyear = year
+         }
       }
       
       // loop all years and add zero months
       for (i=oldestyear;i<=dnow.getFullYear();i++) {
-      yearlyspendings[i] = {}
+         yearlyspendings[i] = {}
       
-      // loop all months, but if current year, only loop till current month
-      var maxmonth = 12
-      if (i == dnow.getFullYear()) {
-         maxmonth = dnow.getMonth() + 1
-      }
-      for (j=0;j<maxmonth;j++) {
-         yearlyspendings[i][j] = 0
-      }
+         // loop all months, but if current year, only loop till current month
+         var maxmonth = 12
+         if (i == dnow.getFullYear()) {
+            maxmonth = dnow.getMonth() + 1
+         }
+         for (j=0;j<maxmonth;j++) {
+            yearlyspendings[i][j] = 0
+         }
       }
 
       // find all months when purchases are made
       for (i=0;i<data.length;i++) {
-      var ditem = new Date(data[i][3])
-      var month = ditem.getMonth()
-      var year = ditem.getFullYear()
-      
-      yearlyspendings[year][month] += data[i][1]
+         var ditem = new Date(data[i][3])
+         var month = ditem.getMonth()
+         var year = ditem.getFullYear()
+         
+         yearlyspendings[year][month] += data[i][1]
       }
    return yearlyspendings;
    }
@@ -310,12 +322,12 @@ var currencyTraffic = function (canvasid) {
       // Calculate (and currently print) total spending for all products
       spending = 0;
       for (var i=0;i<data.length;i++){
-      spending += parseInt(data[i][1]);
+         spending += parseInt(data[i][1]);
       }
       return spending
    }
 
    function timestring(dnow) {
-      return dnow.getDate() + "." + (dnow.getMonth() + 1)  + "." + dnow.getFullYear();
+      return dnow.getDate() + "." + (dnow.getMonth() + 1)  + "." + dnow.getFullYear()
    }
 }
