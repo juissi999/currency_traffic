@@ -161,9 +161,6 @@ var currencyTraffic = function (canvasid) {
       // and parse as float
       var floatprice = parseFloat(price.split(",").join("."));
 
-      // make price always two decimal long
-      floatprice = floatprice.toFixed(2);
-
       // check that price was actually a number
       if (!isNaN(floatprice)) {
          // format datafields -> faster for user to put next item
@@ -201,18 +198,18 @@ var currencyTraffic = function (canvasid) {
          
       spendingstr = "";
       if (data.length > 0) {
-            var categoryspendings = calcCategorySpendings(data)
-            var monthlyspendings = calcYearlySpendins(data, dnow)
-            printCharts(categoryspendings, monthlyspendings, year)
+         var categoryspendings = calcCategorySpendings(data)
+         var monthlyspendings = calcYearlySpendins(data, dnow)
+         printCharts(categoryspendings, monthlyspendings, year)
 
-            // form categorical spending string
-            for (var i=0;i<options.length;i++){
-            spendingstr += options[i] + ": " + categoryspendings[i] + " "
-            }
+         // form categorical spending string
+         for (var i=0;i<options.length;i++){
+         spendingstr += options[i] + ": " + categoryspendings[i] + " "
+         }
       } else {
-            document.getElementById('chart').innerHTML = ""
-            document.getElementById('chart2').innerHTML = ""
-            document.getElementById('chart3').innerHTML = ""
+         document.getElementById('chart').innerHTML = ""
+         document.getElementById('chart2').innerHTML = ""
+         document.getElementById('chart3').innerHTML = ""
       }
 
       // update categorical spending string
@@ -298,7 +295,7 @@ var currencyTraffic = function (canvasid) {
          arraystr += "<tr><td>"
          arraystr += purchaselist[i][0]
          arraystr += "</td><td>"
-         arraystr += purchaselist[i][1]
+         arraystr += purchaselist[i][1].toFixed(2);
          arraystr += "</td><td>"
          arraystr += purchaselist[i][2]
          arraystr += "</td><td>"
