@@ -154,15 +154,25 @@ var currencyTraffic = function (canvasid) {
    $("#addbutton").click(function validateForm() {
       ptime = new Date()
       purchase = $("#purchase").val()
-      price = parseInt($("#price").val())
+      price = $("#price").val()
       selection = document.getElementById("selection")["value"]
 
-      // format datafields -> faster for user to put next item
-      $("#purchase").val("")
-      $("#price").val("")
+      // change all , => . so that both are usable as currency delims
+      // and parse as float
+      var floatprice = parseFloat(price.split(",").join("."));
 
-      addPurchase(purchase, price, selection, ptime)
-      updateView(dnow.getFullYear())
+      // make price always two decimal long
+      floatprice = floatprice.toFixed(2);
+
+      // check that price was actually a number
+      if (!isNaN(floatprice)) {
+         // format datafields -> faster for user to put next item
+         $("#purchase").val("")
+         $("#price").val("")
+
+         addPurchase(purchase, floatprice, selection, ptime)
+         updateView(dnow.getFullYear())
+      }
    });
 
    $("#randombutton").click(function validateForm() {
