@@ -191,10 +191,14 @@ var currencyTraffic = function (canvasid) {
       }
    }
    
+   function float2price(f) {
+      return f.toFixed(2)
+   }
+
    function updateView(year){
       // this function updates the view, recalculates all too
       printPurchases(data)
-      document.getElementById("spending").innerHTML = "Transactions: " + data.length + " total spending: " + calcTotalSpending(data)
+      document.getElementById("spending").innerHTML = "Transactions: " + data.length + " total spending: " + float2price(calcTotalSpending(data))
          
       spendingstr = "";
       if (data.length > 0) {
@@ -204,7 +208,7 @@ var currencyTraffic = function (canvasid) {
 
          // form categorical spending string
          for (var i=0;i<options.length;i++){
-         spendingstr += options[i] + ": " + categoryspendings[i] + " "
+         spendingstr += options[i] + ": " + float2price(categoryspendings[i]) + " "
          }
       } else {
          document.getElementById('chart').innerHTML = ""
@@ -295,7 +299,7 @@ var currencyTraffic = function (canvasid) {
          arraystr += "<tr><td>"
          arraystr += purchaselist[i][0]
          arraystr += "</td><td>"
-         arraystr += purchaselist[i][1].toFixed(2);
+         arraystr += float2price(purchaselist[i][1]);
          arraystr += "</td><td>"
          arraystr += purchaselist[i][2]
          arraystr += "</td><td>"
@@ -369,7 +373,7 @@ var currencyTraffic = function (canvasid) {
       // Calculate (and currently print) total spending for all products
       spending = 0;
       for (var i=0;i<data.length;i++){
-         spending += parseInt(data[i][1]);
+         spending += data[i][1];
       }
       return spending
    }
