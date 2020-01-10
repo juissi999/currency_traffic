@@ -245,49 +245,44 @@ var currencyTraffic = function (canvasid) {
    
    function printCharts(categoryspendings, yearlyspendings, year){
       // parse categoryspendings
-      var d = [['Category', 'Spending on category']]
+      totals = d3.sum(categoryspendings)
+      var cgdata = []
       for (var i = 0; i < options.length; i++){
-         d.push([options[i], categoryspendings[i]])
+         cgdata.push({"id":options[i], "r":categoryspendings[i]/totals*150})
       }
       
       // parse monthlyspendings for selected year
       var monthlyspendings = yearlyspendings[year]
-      var d2 = [["month", "spending"]]
+      var dataforthisyear = []
       for (var key in monthlyspendings) {
-         d2.push([monthnames[key], monthlyspendings[key]]) //parseInt(Number(key)+1)
+         dataforthisyear.push({"x":+key+1, "y": monthlyspendings[key]})
       }
       
       // parse yearlyspendings
       var yearlyspending = 0
-      var d3 = [["year", "spending"]]
+      var data3 = [["year", "spending"]]
+      var yearly = []
       for (var key in yearlyspendings) {
          // loop and sum all monthly spendings across year
          for (var mkey in yearlyspendings[key]) {
             yearlyspending += yearlyspendings[key][mkey]
          }
-         d3.push([key, yearlyspending])
+         data3.push([key, yearlyspending])
+         yearly.push({"x":key, "y":yearlyspending})
          yearlyspending = 0
       }
       
-      var piedata = google.visualization.arrayToDataTable(d)
-      var monthlydata = google.visualization.arrayToDataTable(d2)
-      var yearlydata = google.visualization.arrayToDataTable(d3)
-      
-      var chart = new google.visualization.PieChart(document.getElementById('chart'))
-      var chart2 = new google.visualization.LineChart(document.getElementById('chart2'))
-      var chart3 = new google.visualization.LineChart(document.getElementById('chart3'))
-
-      function selectYear() {
+      function selectYear(d) {
          // when user selects year set draw that years monthly graph
-         var item = chart3.getSelection()[0]
-         var year = d3[item.row+1][0]
-         updateView(year)
+         updateView(d.x)
       }
 
-      chart.draw(piedata, {title: 'Categorical spending', chartArea:{width: '100%', height: '75%'}})
-      chart2.draw(monthlydata, {title: 'Monthly spending in ' + Number(year), chartArea:{width: '90%', height: '75%'}})
-      chart3.draw(yearlydata, {title: 'Spending by year', chartArea:{width: '90%', height: '75%'}})
-      google.visualization.events.addListener(chart3, 'select', selectYear)
+      var width = 300
+      var height = 220
+      var margins = {left:40,right:10,top:20,bottom:20}
+      bubblechart("#chart", cgdata, width, height)
+      linechart("#chart2", dataforthisyear, width, height, margins, 3, ()=>{})
+      linechart("#chart3", yearly, width, height, margins, 3, selectYear)
    }
 
    function printPurchases(purchaselist){
@@ -323,7 +318,8 @@ var currencyTraffic = function (canvasid) {
 
    function generateRandomPurchase(selectioncount) {
       var rnddate = new Date()
-      rnddate.setTime(Math.round(rnddate.getTime()*Math.random()))
+      // scale a it later than from beginning of computertime (rand/4)+0.75
+      rnddate.setTime(Math.round(rnddate.getTime()*((Math.random()/4)+0.75)))
       var rndprice = Math.floor((Math.random() * 100) + 1)
       var rndselection = Math.floor((Math.random() * selectioncount))
       return [rnddate, rndprice, rndselection]
