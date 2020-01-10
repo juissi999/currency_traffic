@@ -44,7 +44,7 @@ module.exports.linechart = function linechart (selector, datapoints, width, heig
 
    g.append('svg:path')
    .attr('d', linegenerator(datapoints))
-   .attr('stroke', "#6495ED")
+   .attr('stroke', "#eeb9a8") //"#6495ED"
    .attr('stroke-width', 2)
    .attr('fill', 'none');
 
@@ -53,12 +53,15 @@ module.exports.linechart = function linechart (selector, datapoints, width, heig
    .attr("r", radius)
    .attr("cx", (d)=>{ return scalex(d.x)})
    .attr("cy", (d)=>{ return scaley(d.y)})
+   .attr("stroke", "#463f6d")
+   .attr('fill', "#463f6d")
    .on("click", on_click)
 }
 
 module.exports.bubblechart = function bubblechart(selector, datapoints, width, height) {
    // make a bubble chart d3 visualization
    // datapoints: id, r
+   var collision_margin = 0.25
 
    // format all previous graphs
    d3.select(selector).html("")
@@ -92,7 +95,7 @@ module.exports.bubblechart = function bubblechart(selector, datapoints, width, h
       .force("x", d3.forceX(width/2).strength(0.05))
       .force("y", d3.forceY(height/2).strength(0.05))
       .force("collide", d3.forceCollide(function(d) {
-         return d.r + 1;
+         return d.r + collision_margin;
       }))
 
    simulation.nodes(datapoints)

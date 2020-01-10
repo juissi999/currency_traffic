@@ -239,10 +239,24 @@ function addSelections(options){
 
 function printCharts(categoryspendings, yearlyspendings, year){
    // parse categoryspendings
-   totals = d3.sum(categoryspendings)
+   var width = 280
+   var height = 200
+   var margins = {left:35,right:20,top:10,bottom:20}
+
+   // calculate bubbles r's so that they show correct amount of area
+   var totals = d3.sum(categoryspendings)
+   var chart_area = Math.min(width, height)*Math.min(width, height)
+
+   var currency_per_pixel = chart_area/totals
+   // make used chart area little bit smaller than 100% to minimize the part of
+   // circles that gets left out
+   currency_per_pixel = currency_per_pixel*0.7
+
    var cgdata = []
    for (var i = 0; i < options.length; i++){
-      cgdata.push({"id":options[i], "r":categoryspendings[i]/totals*150})
+      if (categoryspendings[i] > 0) {
+         cgdata.push({"id":options[i], "r":Math.sqrt(categoryspendings[i]*currency_per_pixel/Math.PI)})
+      }
    }
    
    // parse monthlyspendings for selected year
@@ -271,12 +285,9 @@ function printCharts(categoryspendings, yearlyspendings, year){
       updateView(d.x)
    }
 
-   var width = 280
-   var height = 200
-   var margins = {left:35,right:20,top:10,bottom:20}
    charts.bubblechart("#chart", cgdata, width, height)
-   charts.linechart("#chart2", dataforthisyear, width, height, margins, 3, ()=>{})
-   charts.linechart("#chart3", yearly, width, height, margins, 3, selectYear)
+   charts.linechart("#chart2", dataforthisyear, width, height, margins, 4, ()=>{})
+   charts.linechart("#chart3", yearly, width, height, margins, 4, selectYear)
 }
 
 function printPurchases(purchaselist){
