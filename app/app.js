@@ -100,10 +100,6 @@ var currencyTraffic = function (canvasid) {
    // button callbacks
    $("#chartsb").click((e) => {
       showbclick_callback(e)
-      // this updateview not necessarily needed but it is here to combat the
-      // google charts bug that messes up drawing options if drawing to a
-      // div that is hidden and then revealed
-      updateView(dnow.getFullYear())
    })
 
    $("#purchaselistb").click((e) => {
@@ -273,9 +269,9 @@ var currencyTraffic = function (canvasid) {
          updateView(d.x)
       }
 
-      var width = 300
-      var height = 220
-      var margins = {left:40,right:10,top:20,bottom:20}
+      var width = 280
+      var height = 200
+      var margins = {left:35,right:20,top:10,bottom:20}
       bubblechart("#chart", cgdata, width, height)
       linechart("#chart2", dataforthisyear, width, height, margins, 3, ()=>{})
       linechart("#chart3", yearly, width, height, margins, 3, selectYear)
