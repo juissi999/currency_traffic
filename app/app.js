@@ -81,16 +81,12 @@ var currencyTraffic = function (canvasid) {
    // generate selections for different categories
    addSelections(options)
 
-   // load google charts
-   google.charts.load('current', {'packages':['corechart']})
-   google.charts.setOnLoadCallback(googlec_loaded)
 
-   function googlec_loaded() {
-      // if data exists at this point, calc and draw statistics
-      if (data.length > 0) {
-         updateView(dnow.getFullYear())
-      }
+   // if data exists at this point, calc and draw statistics
+   if (data.length > 0) {
+      updateView(dnow.getFullYear())
    }
+
    
    //document.getElementById("newp").style.cursor = "pointer"; 
    $("#newpb").click((e) => {
