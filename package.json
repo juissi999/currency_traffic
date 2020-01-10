@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/juissi999/currency_traffic#readme",
   "dependencies": {
-    "google-charts": "^2.0.0",
+    "d3": "^5.15.0",
     "jquery": "^3.4.1"
   },
   "devDependencies": {

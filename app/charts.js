@@ -1,4 +1,6 @@
-function linechart (selector, datapoints, width, height, margins, radius, on_click) {
+var d3 = require("d3")
+
+module.exports.linechart = function linechart (selector, datapoints, width, height, margins, radius, on_click) {
 
    var inner_height = height - margins.top-margins.bottom
    var inner_width = width - margins.left-margins.right
@@ -54,7 +56,7 @@ function linechart (selector, datapoints, width, height, margins, radius, on_cli
    .on("click", on_click)
 }
 
-function bubblechart(selector, datapoints, width, height) {
+module.exports.bubblechart = function bubblechart(selector, datapoints, width, height) {
    // make a bubble chart d3 visualization
    // datapoints: id, r
 
