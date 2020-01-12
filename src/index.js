@@ -78,7 +78,6 @@ function currency_traffic (canvasid) {
     localStorage.setItem('ct_show_options', JSON.stringify(showb_states))
   }
 
-
   var dnow = new Date()
   var monthnames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -308,7 +307,7 @@ function currency_traffic (canvasid) {
         arraystr += '</td><td>'
         arraystr += purchaselist[i][3].toLocaleDateString('fi')
         arraystr += '</td><td>'
-        arraystr += '<input id="rb" + i + "\" type="button" class="rmitembutton" value="del">'
+        arraystr += '<button id="rb' + i + '" class="rmitembutton">del</button>'
         arraystr += '</tr>'
     }
     arraystr += '</table>'
