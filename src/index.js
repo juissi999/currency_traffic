@@ -81,7 +81,10 @@ function currency_traffic (canvasid) {
   var dnow = new Date()
   var monthnames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+  // options match to colors
+  var colors = d3.schemePastel2
   var options = ['food', 'service', 'leisure', 'item', 'rent', 'insurance']
+
   $('#time').text(timestring(dnow))
 
   // generate selections for different categories
@@ -151,7 +154,7 @@ function currency_traffic (canvasid) {
     ptime = new Date()
     purchase = $('#purchase').val()
     price = $('#price').val()
-    selection = document.getElementById('selection')['value']
+    selection = document.getElementById('selection').selectedIndex
 
     // change all , => . so that both are usable as currency delims
     // and parse as float
@@ -175,7 +178,7 @@ function currency_traffic (canvasid) {
         const [rnddate, rndprice, rndselection] = generateRandomPurchase(document.getElementById('selection').length)
 
         // insert purchase
-        addPurchase('random', rndprice, document.getElementById('selection')[rndselection]['value'], rnddate)
+        addPurchase('random', rndprice, rndselection, rnddate)
     }
     updateView(dnow.getFullYear())
   })
@@ -204,7 +207,7 @@ function currency_traffic (canvasid) {
 
         // form categorical spending string
         for (var i=0;i<options.length;i++){
-        spendingstr += options[i] + ': ' + float2price(categoryspendings[i]) + ' '
+          spendingstr += options[i] + ': ' + float2price(categoryspendings[i]) + ' '
         }
     } else {
         document.getElementById('chart').innerHTML = ''
@@ -221,7 +224,7 @@ function currency_traffic (canvasid) {
     var categoryspendings = Array(options.length).fill(0)
     for (var i=0;i<options.length;i++){
         for (j=0;j<data.length;j++) {
-              if (options[i].valueOf() === inputdata[j][2].valueOf()) {
+              if (i === inputdata[j][2]) {
                 categoryspendings[i] += inputdata[j][1]
               }
         }
@@ -257,7 +260,7 @@ function currency_traffic (canvasid) {
     var cgdata = []
     for (var i = 0; i < options.length; i++){
         if (categoryspendings[i] > 0) {
-          cgdata.push({'id':options[i], 'r':Math.sqrt(categoryspendings[i]*currency_per_pixel/Math.PI)})
+          cgdata.push({'id':options[i], 'r':Math.sqrt(categoryspendings[i]*currency_per_pixel/Math.PI), 'color':colors[i]})
         }
     }
     
@@ -295,17 +298,18 @@ function currency_traffic (canvasid) {
   function printPurchases (purchaselist) {
     // Print the list of goodies bought
     var arraystr = '<table>'
-    arraystr += '<tr><th>Item</th><th>Price</th><th>Type</th><th>Date</th></tr>'
+    arraystr += '<tr><th>Item</th><th>Price</th><th>Date</th></tr>'
     var len = purchaselist.length
     for (var i=len-1;i>-1;i--){
-        arraystr += '<tr><td>'
+        var category = purchaselist[i][2]
+        var date = purchaselist[i][3]
+        arraystr += '<tr style="background-color:' + colors[category] + '"><td>'
         arraystr += purchaselist[i][0]
         arraystr += '</td><td>'
         arraystr += float2price(purchaselist[i][1])
         arraystr += '</td><td>'
-        arraystr += purchaselist[i][2]
-        arraystr += '</td><td>'
-        arraystr += purchaselist[i][3].toLocaleDateString('fi')
+        //arraystr += purchaselist[i][3].toLocaleDateString('fi')
+        arraystr += date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear().toString().substr(2,2)
         arraystr += '</td><td>'
         arraystr += '<button id="rb' + i + '" class="rmitembutton">del</button>'
         arraystr += '</tr>'
@@ -326,7 +330,7 @@ function currency_traffic (canvasid) {
   function generateRandomPurchase (selectioncount) {
     var rnddate = new Date()
     // scale a it later than from beginning of computertime (rand/4)+0.75
-    rnddate.setTime(Math.round(rnddate.getTime()*((Math.random()/4)+0.75)))
+    rnddate.setTime(Math.round(rnddate.getTime()*((Math.random()/5)+0.8)))
     var rndprice = Math.floor((Math.random() * 100) + 1)
     var rndselection = Math.floor((Math.random() * selectioncount))
     return [rnddate, rndprice, rndselection]

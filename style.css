@@ -46,9 +46,11 @@ td, th{
     padding: 0px 5px 0px 2px;
 }
 
+/*
 tr:nth-child(even) {
     background-color: #d9f2e6;
 }
+*/
 
 table {
     width:100%;

@@ -60,7 +60,7 @@ module.exports.linechart = function linechart (selector, datapoints, width, heig
 
 module.exports.bubblechart = function bubblechart(selector, datapoints, width, height) {
    // make a bubble chart d3 visualization
-   // datapoints: id, r
+   // datapoints: id, r, color
    var collision_margin = 0.25
 
    // format all previous graphs
@@ -71,8 +71,6 @@ module.exports.bubblechart = function bubblechart(selector, datapoints, width, h
                .attr("width", width)
                .attr("viewBox", [0, 0, width, height])
 
-   var colors = d3.schemePastel2
-
    var circles = svg.selectAll("circle")
                .data(datapoints)
                .enter().append("circle")
@@ -80,7 +78,7 @@ module.exports.bubblechart = function bubblechart(selector, datapoints, width, h
                .attr("cy", 0)
                .attr("r", function (d) { return d.r })
                .style("fill", function (d, i) {
-                  return colors[i]
+                  return d.color
                });
 
    var texts = svg.selectAll("texts")
