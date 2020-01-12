@@ -5,7 +5,7 @@ var d3 = require("d3")
 // place app in body
 currency_traffic("body")
 
-function currency_traffic() {
+function currency_traffic(canvasid) {
 
    if (typeof(Storage) !== "undefined") {
       // Code for localStorage/sessionStorage.
