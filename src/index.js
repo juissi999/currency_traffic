@@ -19,8 +19,7 @@ function currency_traffic (canvasid) {
   $(canvasid).append("<div id=\"newp_wrapper\">Name <input type=\"text\" id=\"purchase\" size=\"15\">" +
                     " Price <input type=\"text\" id=\"price\" size=\"7\">" +
                     "<div id=\"selection\"></div>" +
-                    " <button id=\"addbutton\">Add</button>" +
-                    " <button id=\"randombutton\">Add 100 random purchases</button></div>")
+                    " <button id=\"addbutton\">Add</button>")
   $(canvasid).append("<button class=\"section_toggle\" id=\"statsb\">Statistics -</button><br>")
   $(canvasid).append("<div id=\"stats_wrapper\">" +
                     "<p id=\"spending\"></p><p id=\"categoryspending\"></p></div>")

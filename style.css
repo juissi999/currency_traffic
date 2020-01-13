@@ -60,7 +60,7 @@ table {
 
 button {
     font-size: 17px;
-    margin: 0 0 10px;
+    margin: 6px 0 6px 0px;
 }
 
 input [type=text] {
@@ -93,11 +93,11 @@ input [type=text] {
 
 .categorybutton {
     display:inline-block;
-    margin: 4px;
+    margin: 5px 5px 5px 2px;
     border: 0;
-    padding: 1px;
+    padding: 2px;
+    font-size: 20px;
 }
-
 
 .inlineitem {
     display:inline-block;
