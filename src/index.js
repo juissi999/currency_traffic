@@ -3,36 +3,103 @@ var $ = require('jquery')
 var d3 = require('d3')
 
 // place app in body
-currency_traffic('body')
+currency_traffic('wrapper')
 
 function currency_traffic (canvasid) {
 
   if (typeof(Storage) !== 'undefined') {
     // Code for localStorage/sessionStorage.
     } else {
-    return $(canvasid).append('Sorry! Your browser has no Web Storage support..')
+      return $(canvasid).append('Sorry! Your browser has no Web Storage support..')
     }
 
   // generate site structure, add elements to canvas
-  $(canvasid).append("<h1>Currency traffic <div id=\"time\" class=\"inlineitem\"></div></h1>")
-  $(canvasid).append("<button class=\"section_toggle\" id=\"newpb\">New purchase -</button><br>")
-  $(canvasid).append("<div id=\"newp_wrapper\">Name <input type=\"text\" id=\"purchase\" size=\"15\">" +
-                    " Price <input type=\"text\" id=\"price\" size=\"7\">" +
-                    "<div id=\"selection\"></div>" +
-                    " <button id=\"addbutton\">Add</button>")
-  $(canvasid).append("<button class=\"section_toggle\" id=\"statsb\">Statistics -</button><br>")
-  $(canvasid).append("<div id=\"stats_wrapper\">" +
-                    "<p id=\"spending\"></p><p id=\"categoryspending\"></p></div>")
-  $(canvasid).append("<button class=\"section_toggle\" id=\"chartsb\">Charts -</button><br>")
-  $(canvasid).append("<div id=\"charts_wrapper\" class=\"charts\">" +
-                      "<div id=\"chart\" class=\"chart\"></div>" +
-                      "<div id=\"chart2\" class=\"chart\"></div>" +
-                      "<div id=\"chart3\" class=\"chart\"></div></div>")
-  $(canvasid).append("<button class=\"section_toggle\" id=\"purchaselistb\">Purchases -</button><br>")                    
-  $(canvasid).append("<div id=\"datalist\"></div>")
-  $(canvasid).append("<button class=\"section_toggle\" id=\"cleardatab\">Clear data -</button>")
-  $(canvasid).append("<div id=\"cleardata_wrapper\">Are you sure? All data will be removed permanently " +
-                      "<button id=\"data_final_rmb\">Clear all</button></div>")
+  // title
+  var h1 = document.createElement('h1');
+  h1.appendChild(document.createTextNode('Currency traffic '));
+  var timediv = document.createElement('div')
+  timediv.setAttribute('id', 'time')
+  timediv.setAttribute('class', 'inlineitem')
+  h1.appendChild(timediv)
+  document.getElementById(canvasid).appendChild(h1);
+
+  // s1
+  var newpsec = createsection ('New purchase', 'newpb', 'newp_wrapper')
+  newpsec.wrapper.appendChild(document.createTextNode('Name '))
+  newpsec.wrapper.appendChild(createinput('purchase', 15))
+  newpsec.wrapper.appendChild(document.createTextNode('Price '))
+  newpsec.wrapper.appendChild(createinput('price', 7))
+  var sdiv = document.createElement('div')
+  sdiv.setAttribute('id', 'selection')
+  newpsec.wrapper.appendChild(sdiv) 
+  newpsec.wrapper.appendChild(createbutton ('Add', 'addbutton'))
+  document.getElementById(canvasid).appendChild(newpsec.div)
+  
+  // s2
+  var statssec = createsection ('Statistics', 'statsb', 'stats_wrapper')
+  document.getElementById(canvasid).appendChild(statssec.div)
+
+  // s3
+  var chartssec = createsection ('Charts', 'chartsb', 'charts_wrapper')
+  chartssec.wrapper.appendChild(createchart('chart1'))
+  chartssec.wrapper.appendChild(createchart('chart2'))
+  chartssec.wrapper.appendChild(createchart('chart3'))
+  document.getElementById(canvasid).appendChild(chartssec.div)
+
+  // s4
+  var psec = createsection ('Purchases', 'purchaselistb', 'datalist')
+  document.getElementById(canvasid).appendChild(psec.div)
+
+  // s5
+  var csec = createsection ('Clear data', 'cleardatab', 'cleardata_wrapper')
+  csec.wrapper.appendChild(document.createTextNode('Are you sure? All data will be removed permanently.'))
+  csec.wrapper.appendChild(createbutton ('Clear all', 'data_final_rmb'))
+  document.getElementById(canvasid).appendChild(csec.div)
+
+  function createsection (name, button_id, wrapper_id) {
+    var section = {}
+
+    var div = document.createElement('div')
+
+    // button (and header)
+    var but = document.createElement('button')
+    but.appendChild(document.createTextNode(name + ' -'))
+    but.setAttribute('class', 'section_toggle')
+    but.setAttribute('id', button_id)
+    div.appendChild(but)
+
+    // wrapper_div
+    var wrapper = document.createElement('div')
+    wrapper.setAttribute('id', wrapper_id)
+    div.appendChild(wrapper)
+
+    section.div = div
+    section.wrapper = wrapper
+
+    return section
+  }
+
+  function createbutton (txt, id) {
+    var but = document.createElement('button')
+    but.setAttribute('id', id)
+    but.appendChild(document.createTextNode(txt))
+    return but
+  }
+
+  function createchart (id) {
+    var div = document.createElement('div')
+    div.setAttribute('class', 'chart')
+    div.setAttribute('id', id)
+    return div
+  }
+
+  function createinput (id, length) {
+    var inp = document.createElement('input')
+    inp.setAttribute('type', 'text')
+    inp.setAttribute('id', id)
+    inp.setAttribute('size', length)
+    return inp
+  }
 
   var data = []
   if (typeof(window.localStorage.ctdata) === "undefined") {
@@ -226,7 +293,8 @@ function currency_traffic (canvasid) {
   function updateView (year){
     // this function updates the view, recalculates all too
     printPurchases(data)
-    document.getElementById('spending').innerHTML = 'Transactions: ' + data.length + ' total spending: ' + float2price(calcTotalSpending(data))
+    document.getElementById('stats_wrapper').innerHTML = ''
+   // document.getElementById('spending').innerHTML = 'Transactions: ' + data.length + ' total spending: ' + float2price(calcTotalSpending(data))
         
     spendingstr = ''
     if (data.length > 0) {
@@ -239,13 +307,14 @@ function currency_traffic (canvasid) {
           spendingstr += categories[i] + ': ' + float2price(categoryspendings[i]) + ' '
         }
     } else {
-        document.getElementById('chart').innerHTML = ''
+        document.getElementById('chart1').innerHTML = ''
         document.getElementById('chart2').innerHTML = ''
         document.getElementById('chart3').innerHTML = ''
     }
 
     // update categorical spending string
-    document.getElementById('categoryspending').innerHTML = spendingstr
+    document.getElementById('stats_wrapper').innerHTML = 'Transactions: ' + data.length + ' total spending: ' +
+                                                          float2price(calcTotalSpending(data)) + '<br>' + spendingstr
   }
 
   function calcCategorySpendings (inputdata) {
@@ -309,7 +378,7 @@ function currency_traffic (canvasid) {
         updateView(d.x)
     }
 
-    charts.bubblechart('#chart', cgdata, width, height)
+    charts.bubblechart('#chart1', cgdata, width, height)
     charts.linechart('#chart2', dataforthisyear, width, height, margins, 4, ()=>{})
     charts.linechart('#chart3', yearly, width, height, margins, 4, selectYear)
   }
