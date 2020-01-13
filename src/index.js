@@ -17,8 +17,8 @@ function currency_traffic (canvasid) {
   $(canvasid).append("<h1>Currency traffic <div id=\"time\" class=\"inlineitem\"></div></h1>")
   $(canvasid).append("<button class=\"section_toggle\" id=\"newpb\">New purchase -</button><br>")
   $(canvasid).append("<div id=\"newp_wrapper\">Name <input type=\"text\" id=\"purchase\" size=\"15\">" +
-                    " Price <input type=\"text\" id=\"price\" size=\"7\"><br>Type:" +
-                    "<select id=\"selection\"></select>" +
+                    " Price <input type=\"text\" id=\"price\" size=\"7\">" +
+                    "<div id=\"selection\"></div>" +
                     " <button id=\"addbutton\">Add</button>" +
                     " <button id=\"randombutton\">Add 100 random purchases</button></div>")
   $(canvasid).append("<button class=\"section_toggle\" id=\"statsb\">Statistics -</button><br>")
@@ -82,13 +82,44 @@ function currency_traffic (canvasid) {
   var monthnames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
   // options match to colors
-  var colors = d3.schemePastel2
-  var options = ['food', 'service', 'leisure', 'item', 'rent', 'insurance']
+  var colors = d3.schemePastel1
+  var categories = ['food', 'service', 'leisure', 'item', 'rent', 'insurance', 'transport']
 
   $('#time').text(timestring(dnow))
 
   // generate selections for different categories
-  addSelections(options)
+  var selection = 0
+  addSelections(categories)
+     
+  function addSelections (categories) {
+    //Create and append the options
+    for (var i = 0; i < categories.length; i++) {
+        // var option = document.createElement('option')
+        // option.value = options[i]
+        // option.text = options[i]
+        var cel = document.createElement('button')
+        cel.setAttribute('class', 'categorybutton')
+        cel.setAttribute('style', 'background-color:' + colors[i])
+        cel.setAttribute('data-category', i)
+        cel.innerHTML = categories[i]
+        cel.addEventListener('click', function (event) {
+          // set selection variable to correct
+          selection = parseInt(event.target.getAttribute('data-category'))
+
+          // remove selected-class from all selections
+          var ss = document.getElementById('selection').children
+          for (j=0;j<ss.length;j++) {
+            ss[j].classList.remove('selected')
+          }
+
+          // add to newest selection
+          event.target.classList.add('selected')
+        })
+        document.getElementById('selection').appendChild(cel)
+    }
+    // initialize to first element selected
+    document.getElementById('selection').children[0].classList.add('selected')
+  }
 
   // if data exists at this point, calc and draw statistics
   if (data.length > 0) {
@@ -154,7 +185,6 @@ function currency_traffic (canvasid) {
     ptime = new Date()
     purchase = $('#purchase').val()
     price = $('#price').val()
-    selection = document.getElementById('selection').selectedIndex
 
     // change all , => . so that both are usable as currency delims
     // and parse as float
@@ -175,7 +205,7 @@ function currency_traffic (canvasid) {
     var howmanyrandom = 100
     for (var i=0; i<howmanyrandom; i++) {
         // generate random attributes
-        const [rnddate, rndprice, rndselection] = generateRandomPurchase(document.getElementById('selection').length)
+        const [rnddate, rndprice, rndselection] = generateRandomPurchase(categories.length)
 
         // insert purchase
         addPurchase('random', rndprice, rndselection, rnddate)
@@ -206,8 +236,8 @@ function currency_traffic (canvasid) {
         printCharts(categoryspendings, monthlyspendings, year)
 
         // form categorical spending string
-        for (var i=0;i<options.length;i++){
-          spendingstr += options[i] + ': ' + float2price(categoryspendings[i]) + ' '
+        for (var i=0;i<categories.length;i++){
+          spendingstr += categories[i] + ': ' + float2price(categoryspendings[i]) + ' '
         }
     } else {
         document.getElementById('chart').innerHTML = ''
@@ -221,8 +251,8 @@ function currency_traffic (canvasid) {
 
   function calcCategorySpendings (inputdata) {
     // Calculate categorical spendings for each option for input values
-    var categoryspendings = Array(options.length).fill(0)
-    for (var i=0;i<options.length;i++){
+    var categoryspendings = Array(categories.length).fill(0)
+    for (var i=0;i<categories.length;i++){
         for (j=0;j<data.length;j++) {
               if (i === inputdata[j][2]) {
                 categoryspendings[i] += inputdata[j][1]
@@ -230,16 +260,6 @@ function currency_traffic (canvasid) {
         }
     }
     return categoryspendings
-  }
-        
-  function addSelections (options) {
-    //Create and append the options
-    for (var i = 0; i < options.length; i++) {
-        var option = document.createElement('option')
-        option.value = options[i]
-        option.text = options[i]
-        document.getElementById('selection').appendChild(option)
-    }
   }
 
   function printCharts (categoryspendings, yearlyspendings, year) {
@@ -258,9 +278,9 @@ function currency_traffic (canvasid) {
     currency_per_pixel = currency_per_pixel*0.7
 
     var cgdata = []
-    for (var i = 0; i < options.length; i++){
+    for (var i = 0; i < categories.length; i++){
         if (categoryspendings[i] > 0) {
-          cgdata.push({'id':options[i], 'r':Math.sqrt(categoryspendings[i]*currency_per_pixel/Math.PI), 'color':colors[i]})
+          cgdata.push({'id':categories[i], 'r':Math.sqrt(categoryspendings[i]*currency_per_pixel/Math.PI), 'color':colors[i]})
         }
     }
     
