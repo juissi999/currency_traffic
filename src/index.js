@@ -296,7 +296,7 @@ function currency_traffic (canvasid) {
     var categoryspendings = 0
     if (data.length > 0) {
         categoryspendings = calcCategorySpendings(data)
-        var data_thism = filter_data_by_month(data, dnow.getMonth())
+        var data_thism = filter_data_by_month(data, dnow.getYear(), dnow.getMonth())
         var categoryspendings_thism = calcCategorySpendings(data_thism)
         var monthlyspendings = calcYearlySpendins(data, dnow)
         printCharts(categoryspendings, monthlyspendings, year)
@@ -485,11 +485,11 @@ function currency_traffic (canvasid) {
     return my_sum
   }
 
-  function filter_data_by_month(purchaselist, month) {
+  function filter_data_by_month(purchaselist, year, month) {
 
     var new_data = []
     for (var i=0;i<purchaselist.length;i++) {
-      if (purchaselist[i][3].getMonth() === month) {
+      if (purchaselist[i][3].getYear() === year && purchaselist[i][3].getMonth() === month) {
         new_data.push(purchaselist[i])
       }
     } 
