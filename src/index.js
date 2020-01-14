@@ -258,6 +258,15 @@ function currency_traffic (canvasid) {
   //   updateView(dnow.getFullYear())
   // })
 
+  // function generateRandomPurchase (selectioncount) {
+  //   var rnddate = new Date()
+  //   // scale a it later than from beginning of computertime (rand/4)+0.75
+  //   rnddate.setTime(Math.round(rnddate.getTime()*((Math.random()/5)+0.8)))
+  //   var rndprice = Math.floor((Math.random() * 100) + 1)
+  //   var rndselection = Math.floor((Math.random() * selectioncount))
+  //   return [rnddate, rndprice, rndselection]
+  // }
+
   function addPurchase (purchase, price, selection, datetime) {
     if (purchase.length > 0) {
         data.push([purchase, price, selection, datetime])
@@ -273,8 +282,15 @@ function currency_traffic (canvasid) {
     // this function updates the view, recalculates all too
     printPurchases(data)
     document.getElementById('stats_wrapper').innerHTML = ''
-   // document.getElementById('spending').innerHTML = 'Transactions: ' + data.length + ' total spending: ' + float2price(calcTotalSpending(data))
-        
+    // document.getElementById('spending').innerHTML = 'Transactions: ' + data.length + ' total spending: ' + float2price(calcTotalSpending(data))
+
+    var stable = document.createElement('table')
+    stable.setAttribute('id', 'stats_table')
+    document.getElementById('stats_wrapper').appendChild(stable)
+
+    add_headers('stats_table', ['', 'this month', 'all time'])
+    add_row('stats_table', ['transactions', 'NAN', data.length])
+
     spendingstr = ''
     if (data.length > 0) {
         var categoryspendings = calcCategorySpendings(data)
@@ -283,17 +299,34 @@ function currency_traffic (canvasid) {
 
         // form categorical spending string
         for (var i=0;i<categories.length;i++){
-          spendingstr += categories[i] + ': ' + float2price(categoryspendings[i]) + ' '
+          add_row('stats_table', [categories[i], 'NAN', float2price(categoryspendings[i])])
         }
     } else {
         document.getElementById('chart1').innerHTML = ''
         document.getElementById('chart2').innerHTML = ''
         document.getElementById('chart3').innerHTML = ''
     }
+  }
 
-    // update categorical spending string
-    document.getElementById('stats_wrapper').innerHTML = 'Transactions: ' + data.length + ' total spending: ' +
-                                                          float2price(calcTotalSpending(data)) + '<br>' + spendingstr
+  function add_headers (table_id, header_list ) {
+    // creates the header row to table
+    var str = document.createElement('tr')
+    for (i=0;i<header_list.length;i++){
+      var sth = document.createElement('th')
+      sth.appendChild(document.createTextNode(header_list[i]))
+      str.appendChild(sth)
+    }
+    document.getElementById(table_id).appendChild(str)
+  }
+
+  function add_row (table_id, row_items_list) {
+    var str = document.createElement('tr')
+    for (i=0;i<row_items_list.length;i++){
+      var std = document.createElement('td')
+      std.appendChild(document.createTextNode(row_items_list[i]))
+      str.appendChild(std)
+    }
+    document.getElementById(table_id).appendChild(str)
   }
 
   function calcCategorySpendings (inputdata) {
@@ -395,15 +428,6 @@ function currency_traffic (canvasid) {
       })
     }
   }
-
-  // function generateRandomPurchase (selectioncount) {
-  //   var rnddate = new Date()
-  //   // scale a it later than from beginning of computertime (rand/4)+0.75
-  //   rnddate.setTime(Math.round(rnddate.getTime()*((Math.random()/5)+0.8)))
-  //   var rndprice = Math.floor((Math.random() * 100) + 1)
-  //   var rndselection = Math.floor((Math.random() * selectioncount))
-  //   return [rnddate, rndprice, rndselection]
-  // }
 
   function calcYearlySpendins (data, dnow) {
 
