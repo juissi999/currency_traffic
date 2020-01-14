@@ -422,7 +422,6 @@ function currency_traffic (canvasid) {
     for (var i=0;i<purchaselist.length;i++){
       document.getElementById('rb'+i).addEventListener('click', (event) => {
         var indice = parseInt(event.target.getAttribute('data-indice'))
-        console.log(indice)
         purchaselist.splice(indice, 1)
         updateView(dnow.getFullYear())
         localStorage.setItem('ctdata', JSON.stringify(purchaselist))
@@ -469,15 +468,6 @@ function currency_traffic (canvasid) {
     }
   return yearlyspendings
   }
-
-  // function calcTotalSpending (datalist) {
-  //   // Calculate (and currently print) total spending for all products
-  //   spending = 0
-  //   for (var i=0;i<datalist.length;i++){
-  //       spending += datalist[i][1]
-  //   }
-  //   return spending
-  // }
 
   function sum_list_values (my_list) {
     var my_sum = 0

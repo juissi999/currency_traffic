@@ -53,7 +53,7 @@ tr:nth-child(even) {
 */
 
 table {
-   /* width:100%;*/
+    width:850px;
     border-collapse: collapse;
     /*border: 1px solid black;*/
 }
@@ -110,4 +110,11 @@ input [type=text] {
 
 .hiddendiv {
     display:none;
+}
+
+/* less wide screen */
+@media (max-width:900px) {
+    table {
+        width:100%;
+    }
 }
