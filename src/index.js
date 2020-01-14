@@ -38,10 +38,9 @@ function currency_traffic (canvasid) {
 
   // s1
   var newpsec = createsection ('New purchase', 'newpb', 'newp_wrapper', sections_visible['newpb'])
-  newpsec.wrapper.appendChild(document.createTextNode('Name '))
-  newpsec.wrapper.appendChild(createinput('purchase', 15))
-  newpsec.wrapper.appendChild(document.createTextNode('Price '))
-  newpsec.wrapper.appendChild(createinput('price', 7))
+  
+  newpsec.wrapper.appendChild(createinput('Name', 'purchase', 15))
+  newpsec.wrapper.appendChild(createinput('Price', 'price', 7))
   var sdiv = document.createElement('div')
   sdiv.setAttribute('id', 'selection')
   newpsec.wrapper.appendChild(sdiv) 
@@ -128,13 +127,17 @@ function currency_traffic (canvasid) {
     return div
   }
 
-  function createinput (id, length) {
+  function createinput (txt, id, length) {
     // creates an input field
+    var div = document.createElement('div')
+    div.setAttribute('class', 'input_wrapper')
+    div.appendChild(document.createTextNode(txt + ' '))
     var inp = document.createElement('input')
     inp.setAttribute('type', 'text')
     inp.setAttribute('id', id)
     inp.setAttribute('size', length)
-    return inp
+    div.appendChild(inp)
+    return div
   }
 
   // initialize data or load from local storage
@@ -289,24 +292,27 @@ function currency_traffic (canvasid) {
     document.getElementById('stats_wrapper').appendChild(stable)
 
     add_headers('stats_table', ['', 'this month', 'all time'])
-    add_row('stats_table', ['transactions', 'upcoming', data.length])
 
     var categoryspendings = 0
     if (data.length > 0) {
         categoryspendings = calcCategorySpendings(data)
+        var data_thism = filter_data_by_month(data, dnow.getMonth())
+        var categoryspendings_thism = calcCategorySpendings(data_thism)
         var monthlyspendings = calcYearlySpendins(data, dnow)
         printCharts(categoryspendings, monthlyspendings, year)
+        add_row('stats_table', ['transactions', data_thism.length, data.length])
 
         // form categorical spending string
         for (var i=0;i<categories.length;i++){
-          add_row('stats_table', [categories[i], 'upcoming', float2price(categoryspendings[i])])
+          add_row('stats_table', [categories[i], float2price(categoryspendings_thism[i]), float2price(categoryspendings[i])])
         }
     } else {
         document.getElementById('chart1').innerHTML = ''
         document.getElementById('chart2').innerHTML = ''
         document.getElementById('chart3').innerHTML = ''
+        add_row('stats_table', ['transactions', 0, 0])
     }
-    add_row('stats_table', ['total', 'upcoming', float2price(sum_list_values(categoryspendings))])
+    add_row('stats_table', ['total', float2price(sum_list_values(categoryspendings_thism)), float2price(sum_list_values(categoryspendings))])
   }
 
   function add_headers (table_id, header_list ) {
@@ -429,15 +435,15 @@ function currency_traffic (canvasid) {
     }
   }
 
-  function calcYearlySpendins (data, dnow) {
+  function calcYearlySpendins (purchaselist, dnow) {
 
     var yearlyspendings = {}
 
     // initialize year dict with all years starting from beginning to this
     // moment with empty dicts.
     var oldestyear = dnow.getFullYear()
-    for (i=0;i<data.length;i++) {
-        var ditem = new Date(data[i][3])
+    for (i=0;i<purchaselist.length;i++) {
+        var ditem = new Date(purchaselist[i][3])
         var year = ditem.getFullYear()
         if (year < oldestyear) {
           oldestyear = year
@@ -459,22 +465,35 @@ function currency_traffic (canvasid) {
     }
 
     // find all months when purchases are made
-    for (i=0;i<data.length;i++) {
-        var ditem = new Date(data[i][3])
+    for (i=0;i<purchaselist.length;i++) {
+        var ditem = new Date(purchaselist[i][3])
         var month = ditem.getMonth()
         var year = ditem.getFullYear()
         
-        yearlyspendings[year][month] += data[i][1]
+        yearlyspendings[year][month] += purchaselist[i][1]
     }
   return yearlyspendings
   }
 
   function sum_list_values (my_list) {
+    // sum all variables in list together
+    // assumes all are numerical
     var my_sum = 0
     for (var i=0;i<my_list.length;i++) {
       my_sum += my_list[i]
     }
     return my_sum
+  }
+
+  function filter_data_by_month(purchaselist, month) {
+
+    var new_data = []
+    for (var i=0;i<purchaselist.length;i++) {
+      if (purchaselist[i][3].getMonth() === month) {
+        new_data.push(purchaselist[i])
+      }
+    } 
+    return new_data
   }
 
   function timestring (dnow) {

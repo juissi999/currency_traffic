@@ -63,10 +63,6 @@ button {
     margin: 6px 0 6px 0px;
 }
 
-input [type=text] {
-    width: 30%;
-}
-
 .section_toggle {
     display:block;
     background-color:transparent;
@@ -112,9 +108,23 @@ input [type=text] {
     display:none;
 }
 
+.input_wrapper {
+    margin:0px 5px 0px 0px;
+    display:inline-block;
+    font-size:20px;
+}
+
+input {
+    font-size:20px;
+}
+
 /* less wide screen */
 @media (max-width:900px) {
     table {
         width:100%;
+    }
+
+    .input_wrapper {
+        display:block
     }
 }
