@@ -1,5 +1,4 @@
 var charts = require('./charts')
-var $ = require('jquery')
 var d3 = require('d3')
 
 // place app in body
@@ -10,8 +9,22 @@ function currency_traffic (canvasid) {
   if (typeof(Storage) !== 'undefined') {
     // Code for localStorage/sessionStorage.
     } else {
-      return $(canvasid).append('Sorry! Your browser has no Web Storage support..')
-    }
+      return document.getElementById(canvasid).appendChild(document.createTextNode('Sorry! Your browser has no Web Storage support..'))
+  }
+
+  // initialize sections states of load on localstorage
+  var sections_visible = {
+    'newpb': 1,
+    'chartsb': 0,
+    'statsb':  0,
+    'purchaselistb': 0,
+    'cleardatab': 0
+  }
+
+  if (typeof(window.localStorage.sections_visible) !== 'undefined') {
+    // been there before, load my show options
+    sections_visible = JSON.parse(localStorage.getItem('sections_visible'))
+  }
 
   // generate site structure, add elements to canvas
   // title
@@ -24,7 +37,7 @@ function currency_traffic (canvasid) {
   document.getElementById(canvasid).appendChild(h1);
 
   // s1
-  var newpsec = createsection ('New purchase', 'newpb', 'newp_wrapper')
+  var newpsec = createsection ('New purchase', 'newpb', 'newp_wrapper', sections_visible['newpb'])
   newpsec.wrapper.appendChild(document.createTextNode('Name '))
   newpsec.wrapper.appendChild(createinput('purchase', 15))
   newpsec.wrapper.appendChild(document.createTextNode('Price '))
@@ -36,36 +49,47 @@ function currency_traffic (canvasid) {
   document.getElementById(canvasid).appendChild(newpsec.div)
   
   // s2
-  var statssec = createsection ('Statistics', 'statsb', 'stats_wrapper')
+  var statssec = createsection ('Statistics', 'statsb', 'stats_wrapper', sections_visible['statsb'])
   document.getElementById(canvasid).appendChild(statssec.div)
 
   // s3
-  var chartssec = createsection ('Charts', 'chartsb', 'charts_wrapper')
+  var chartssec = createsection ('Charts', 'chartsb', 'charts_wrapper', sections_visible['chartsb'])
   chartssec.wrapper.appendChild(createchart('chart1'))
   chartssec.wrapper.appendChild(createchart('chart2'))
   chartssec.wrapper.appendChild(createchart('chart3'))
   document.getElementById(canvasid).appendChild(chartssec.div)
 
   // s4
-  var psec = createsection ('Purchases', 'purchaselistb', 'datalist')
+  var psec = createsection ('Purchases', 'purchaselistb', 'datalist', sections_visible['purchaselistb'])
   document.getElementById(canvasid).appendChild(psec.div)
 
   // s5
-  var csec = createsection ('Clear data', 'cleardatab', 'cleardata_wrapper')
+  var csec = createsection ('Clear data', 'cleardatab', 'cleardata_wrapper', sections_visible['cleardatab'])
   csec.wrapper.appendChild(document.createTextNode('Are you sure? All data will be removed permanently.'))
   csec.wrapper.appendChild(createbutton ('Clear all', 'data_final_rmb'))
   document.getElementById(canvasid).appendChild(csec.div)
 
-  function createsection (name, button_id, wrapper_id) {
-    var section = {}
 
+  function createsection (name, button_id, wrapper_id, visible) {
+    // creates a section object
     var div = document.createElement('div')
 
     // button (and header)
     var but = document.createElement('button')
-    but.appendChild(document.createTextNode(name + ' -'))
     but.setAttribute('class', 'section_toggle')
     but.setAttribute('id', button_id)
+    but.setAttribute('data-wrapperdiv', wrapper_id)
+
+    but.addEventListener('click', function (event) {
+      // button click callback (toggle show/not_show)
+
+      var button_id =  event.target.id
+      toggle_div(button_id)
+      // save show button states to local variable
+      sections_visible[button_id] = 1 - sections_visible[button_id]
+      save_showb_state()
+    })
+
     div.appendChild(but)
 
     // wrapper_div
@@ -73,13 +97,23 @@ function currency_traffic (canvasid) {
     wrapper.setAttribute('id', wrapper_id)
     div.appendChild(wrapper)
 
+    // visible or not
+    var statestr = ' -'
+    if (!visible) {
+      statestr = ' +'
+      wrapper.setAttribute('class', 'hiddendiv')
+    }
+    but.appendChild(document.createTextNode(name + statestr))
+
+    // form return object
+    var section = {}
     section.div = div
     section.wrapper = wrapper
-
     return section
   }
 
   function createbutton (txt, id) {
+    // creates a button object
     var but = document.createElement('button')
     but.setAttribute('id', id)
     but.appendChild(document.createTextNode(txt))
@@ -87,6 +121,7 @@ function currency_traffic (canvasid) {
   }
 
   function createchart (id) {
+    // creates a chart div
     var div = document.createElement('div')
     div.setAttribute('class', 'chart')
     div.setAttribute('id', id)
@@ -94,6 +129,7 @@ function currency_traffic (canvasid) {
   }
 
   function createinput (id, length) {
+    // creates an input field
     var inp = document.createElement('input')
     inp.setAttribute('type', 'text')
     inp.setAttribute('id', id)
@@ -101,11 +137,11 @@ function currency_traffic (canvasid) {
     return inp
   }
 
+  // initialize data or load from local storage
   var data = []
   if (typeof(window.localStorage.ctdata) === "undefined") {
     // check if browser localstorage has data variable
     localStorage.setItem("ctdata", JSON.stringify([]))
-    
   } else {
     var data_string = JSON.parse(localStorage.getItem("ctdata"))
         data_string.forEach(element => {
@@ -114,34 +150,8 @@ function currency_traffic (canvasid) {
         })
   }
 
-  const showbmap = {'#newpb':'#newp_wrapper',
-                    '#statsb':'#stats_wrapper',
-                    '#chartsb':'#charts_wrapper',
-                    '#purchaselistb':'#datalist',
-                    '#cleardatab':'#cleardata_wrapper'}
-
-  var showb_states = {
-    '#newpb': 1,
-    '#chartsb': 0,
-    '#statsb':  0,
-    '#purchaselistb': 0,
-    '#cleardatab': 0
-  }
-
-  if (typeof(window.localStorage.ct_show_options) !== 'undefined') {
-    // been there before, load my show options
-    showb_states = JSON.parse(localStorage.getItem('ct_show_options'))
-  }
-
-  // set button states to what they had previous session or initialize if not on localstorage
-  for (key in showb_states) {
-    if(showb_states[key] === 0) {
-        toggle_div(key)
-    }
-  }
-
   function save_showb_state () {
-    localStorage.setItem('ct_show_options', JSON.stringify(showb_states))
+    localStorage.setItem('sections_visible', JSON.stringify(sections_visible))
   }
 
   var dnow = new Date()
@@ -151,18 +161,15 @@ function currency_traffic (canvasid) {
   var colors = d3.schemePastel1
   var categories = ['food', 'service', 'leisure', 'item', 'rent', 'insurance', 'transport']
 
-  $('#time').text(timestring(dnow))
+  document.getElementById('time').innerHTML = timestring(dnow)
 
   // generate selections for different categories
   var selection = 0
   addSelections(categories)
-     
+
   function addSelections (categories) {
-    //Create and append the options
+    // Create and append the category selector elements
     for (var i = 0; i < categories.length; i++) {
-        // var option = document.createElement('option')
-        // option.value = options[i]
-        // option.text = options[i]
         var cel = document.createElement('button')
         cel.setAttribute('class', 'categorybutton')
         cel.setAttribute('style', 'background-color:' + colors[i])
@@ -192,65 +199,37 @@ function currency_traffic (canvasid) {
     updateView(dnow.getFullYear())
   }
 
-  //document.getElementById('newp').style.cursor = 'pointer' 
-  $('#newpb').click((e) => {
-    showbclick_callback(e)
-  })
-
-  $('#statsb').click((e) => {
-    showbclick_callback(e)
-  })
-
-  // button callbacks
-  $('#chartsb').click((e) => {
-    showbclick_callback(e)
-  })
-
-  $('#purchaselistb').click((e) => {
-    showbclick_callback(e)
-  })
-
-  $('#cleardatab').click((e) => {
-    showbclick_callback(e)
-  })
-
-  function showbclick_callback (e) {
-    // callback that gets elements id and calls divtoggle
-    elid = '#' + e.target.id
-    toggle_div(elid)
-    // save show button states to local variable
-    showb_states[elid] = 1 - showb_states[elid]
-    save_showb_state()
-  }
-
   function toggle_div (element) {
-    // element is the showbutton id that is toggled
-    // change text and reveal corresponding div
+    // callback for toggling div to be visible or not
 
-    // change the buttons polarity
-    var divtitle = $(element).html()
-    if (divtitle.slice(-1) === '+') {
-        $(element).html(divtitle.slice(0, -1) + '-')
+    var but = document.getElementById(element)
+    var txt = but.firstChild.textContent
+
+    var wrapper = document.getElementById(but.getAttribute('data-wrapperdiv'))
+    if (wrapper.classList.contains('hiddendiv')){
+      wrapper.classList.remove('hiddendiv')
+      but.firstChild.textContent = txt.slice(0, -1) + '-'
     } else {
-        $(element).html(divtitle.slice(0, -1) + '+')
+      wrapper.classList.add('hiddendiv')
+      but.firstChild.textContent = txt.slice(0, -1) + '+'
     }
-    // map element to corresponding div
-    $(showbmap[element]).toggle()
   }
 
-  $('#data_final_rmb').click(() => {
+  document.getElementById('data_final_rmb').addEventListener('click', ()=> {
+    // callback for data_final_rmb
     localStorage.removeItem('ctdata')
     data = []
     updateView(dnow.getFullYear())
-    toggle_div('#cleardatab')
-    showb_states['#cleardatab'] = 1 - showb_states['#cleardatab']
+    toggle_div('cleardatab')
+    sections_visible['cleardatab'] = 1 - sections_visible['cleardatab']
     save_showb_state()
   })
 
-  $('#addbutton').click(function validateForm () {
+  document.getElementById('addbutton').addEventListener('click', ()=> {
+    // callback for addbutton
     ptime = new Date()
-    purchase = $('#purchase').val()
-    price = $('#price').val()
+    purchase = document.getElementById('purchase').value
+    price = document.getElementById('price').value
 
     // change all , => . so that both are usable as currency delims
     // and parse as float
@@ -259,25 +238,25 @@ function currency_traffic (canvasid) {
     // check that price was actually a number
     if (!isNaN(floatprice)) {
         // format datafields -> faster for user to put next item
-        $('#purchase').val('')
-        $('#price').val('')
+        document.getElementById('purchase').value = ''
+        document.getElementById('price').value = ''
 
         addPurchase(purchase, floatprice, selection, ptime)
         updateView(dnow.getFullYear())
     }
   })
 
-  $('#randombutton').click(function validateForm () {
-    var howmanyrandom = 100
-    for (var i=0; i<howmanyrandom; i++) {
-        // generate random attributes
-        const [rnddate, rndprice, rndselection] = generateRandomPurchase(categories.length)
+  // document.getElementById('randombutton').addEventListener('click', ()=> {
+  //   var howmanyrandom = 100
+  //   for (var i=0; i<howmanyrandom; i++) {
+  //       // generate random attributes
+  //       const [rnddate, rndprice, rndselection] = generateRandomPurchase(categories.length)
 
-        // insert purchase
-        addPurchase('random', rndprice, rndselection, rnddate)
-    }
-    updateView(dnow.getFullYear())
-  })
+  //       // insert purchase
+  //       addPurchase('random', rndprice, rndselection, rnddate)
+  //   }
+  //   updateView(dnow.getFullYear())
+  // })
 
   function addPurchase (purchase, price, selection, datetime) {
     if (purchase.length > 0) {
@@ -399,7 +378,7 @@ function currency_traffic (canvasid) {
         //arraystr += purchaselist[i][3].toLocaleDateString('fi')
         arraystr += date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear().toString().substr(2,2)
         arraystr += '</td><td>'
-        arraystr += '<button id="rb' + i + '" class="rmitembutton">del</button>'
+        arraystr += '<button id="rb' + i + '" data-indice="' + i + '" class="rmitembutton">del</button>'
         arraystr += '</tr>'
     }
     arraystr += '</table>'
@@ -407,22 +386,24 @@ function currency_traffic (canvasid) {
     
     // add click-function to each remove-button
     for (var i=0;i<purchaselist.length;i++){
-        $('#rb' + i).click({p1:i}, function removeItem (event) {
-          purchaselist.splice(event.data.p1, 1)
-          updateView(dnow.getFullYear())
-          localStorage.setItem('ctdata', JSON.stringify(purchaselist))
-        })
+      document.getElementById('rb'+i).addEventListener('click', (event) => {
+        var indice = parseInt(event.target.getAttribute('data-indice'))
+        console.log(indice)
+        purchaselist.splice(indice, 1)
+        updateView(dnow.getFullYear())
+        localStorage.setItem('ctdata', JSON.stringify(purchaselist))
+      })
     }
   }
 
-  function generateRandomPurchase (selectioncount) {
-    var rnddate = new Date()
-    // scale a it later than from beginning of computertime (rand/4)+0.75
-    rnddate.setTime(Math.round(rnddate.getTime()*((Math.random()/5)+0.8)))
-    var rndprice = Math.floor((Math.random() * 100) + 1)
-    var rndselection = Math.floor((Math.random() * selectioncount))
-    return [rnddate, rndprice, rndselection]
-  }
+  // function generateRandomPurchase (selectioncount) {
+  //   var rnddate = new Date()
+  //   // scale a it later than from beginning of computertime (rand/4)+0.75
+  //   rnddate.setTime(Math.round(rnddate.getTime()*((Math.random()/5)+0.8)))
+  //   var rndprice = Math.floor((Math.random() * 100) + 1)
+  //   var rndselection = Math.floor((Math.random() * selectioncount))
+  //   return [rnddate, rndprice, rndselection]
+  // }
 
   function calcYearlySpendins (data, dnow) {
 
