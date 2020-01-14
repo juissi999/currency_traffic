@@ -289,23 +289,24 @@ function currency_traffic (canvasid) {
     document.getElementById('stats_wrapper').appendChild(stable)
 
     add_headers('stats_table', ['', 'this month', 'all time'])
-    add_row('stats_table', ['transactions', 'NAN', data.length])
+    add_row('stats_table', ['transactions', 'upcoming', data.length])
 
-    spendingstr = ''
+    var categoryspendings = 0
     if (data.length > 0) {
-        var categoryspendings = calcCategorySpendings(data)
+        categoryspendings = calcCategorySpendings(data)
         var monthlyspendings = calcYearlySpendins(data, dnow)
         printCharts(categoryspendings, monthlyspendings, year)
 
         // form categorical spending string
         for (var i=0;i<categories.length;i++){
-          add_row('stats_table', [categories[i], 'NAN', float2price(categoryspendings[i])])
+          add_row('stats_table', [categories[i], 'upcoming', float2price(categoryspendings[i])])
         }
     } else {
         document.getElementById('chart1').innerHTML = ''
         document.getElementById('chart2').innerHTML = ''
         document.getElementById('chart3').innerHTML = ''
     }
+    add_row('stats_table', ['total', 'upcoming', float2price(sum_list_values(categoryspendings))])
   }
 
   function add_headers (table_id, header_list ) {
@@ -333,7 +334,7 @@ function currency_traffic (canvasid) {
     // Calculate categorical spendings for each option for input values
     var categoryspendings = Array(categories.length).fill(0)
     for (var i=0;i<categories.length;i++){
-        for (j=0;j<data.length;j++) {
+        for (j=0;j<inputdata.length;j++) {
               if (i === inputdata[j][2]) {
                 categoryspendings[i] += inputdata[j][1]
               }
@@ -469,13 +470,21 @@ function currency_traffic (canvasid) {
   return yearlyspendings
   }
 
-  function calcTotalSpending (data) {
-    // Calculate (and currently print) total spending for all products
-    spending = 0
-    for (var i=0;i<data.length;i++){
-        spending += data[i][1]
+  // function calcTotalSpending (datalist) {
+  //   // Calculate (and currently print) total spending for all products
+  //   spending = 0
+  //   for (var i=0;i<datalist.length;i++){
+  //       spending += datalist[i][1]
+  //   }
+  //   return spending
+  // }
+
+  function sum_list_values (my_list) {
+    var my_sum = 0
+    for (var i=0;i<my_list.length;i++) {
+      my_sum += my_list[i]
     }
-    return spending
+    return my_sum
   }
 
   function timestring (dnow) {
