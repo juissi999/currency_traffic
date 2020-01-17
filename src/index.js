@@ -300,11 +300,11 @@ function currency_traffic (canvasid) {
         var categoryspendings_thism = calcCategorySpendings(data_thism)
         var monthlyspendings = calcYearlySpendins(data, dnow)
         printCharts(categoryspendings, monthlyspendings, year)
-        add_row('stats_table', ['transactions', data_thism.length, data.length])
+        add_row('stats_table', '', ['transactions', data_thism.length, data.length])
 
         // form categorical spending string
         for (var i=0;i<categories.length;i++){
-          add_row('stats_table', [categories[i], float2price(categoryspendings_thism[i]), float2price(categoryspendings[i])])
+          add_row('stats_table', '', [categories[i], float2price(categoryspendings_thism[i]), float2price(categoryspendings[i])])
         }
     } else {
         document.getElementById('chart1').innerHTML = ''
@@ -312,7 +312,7 @@ function currency_traffic (canvasid) {
         document.getElementById('chart3').innerHTML = ''
         add_row('stats_table', ['transactions', 0, 0])
     }
-    add_row('stats_table', ['total', float2price(sum_list_values(categoryspendings_thism)), float2price(sum_list_values(categoryspendings))])
+    add_row('stats_table', '', ['total', float2price(sum_list_values(categoryspendings_thism)), float2price(sum_list_values(categoryspendings))])
   }
 
   function add_headers (table_id, header_list ) {
@@ -326,14 +326,16 @@ function currency_traffic (canvasid) {
     document.getElementById(table_id).appendChild(str)
   }
 
-  function add_row (table_id, row_items_list) {
+  function add_row (table_id, rowcolor, row_items_list) {
     var str = document.createElement('tr')
+    str.setAttribute('style', 'background-color:' + rowcolor)
     for (i=0;i<row_items_list.length;i++){
       var std = document.createElement('td')
       std.appendChild(document.createTextNode(row_items_list[i]))
       str.appendChild(std)
     }
     document.getElementById(table_id).appendChild(str)
+    return str
   }
 
   function calcCategorySpendings (inputdata) {
@@ -404,34 +406,38 @@ function currency_traffic (canvasid) {
 
   function printPurchases (purchaselist) {
     // Print the list of goodies bought
-    var arraystr = '<table>'
-    arraystr += '<tr><th>Item</th><th>Price</th><th>Date</th></tr>'
+    document.getElementById('datalist').innerHTML = ''
+    // create table element
+    var ptable = document.createElement('table')
+    ptable.setAttribute('id', 'purchases_table')
+    document.getElementById('datalist').appendChild(ptable)
+
+    add_headers('purchases_table', ['Item', 'Price', 'Date'])
+
     var len = purchaselist.length
     for (var i=len-1;i>-1;i--){
+        // create row for purchasetable
         var category = purchaselist[i][2]
         var date = purchaselist[i][3]
-        arraystr += '<tr style="background-color:' + colors[category] + '"><td>'
-        arraystr += purchaselist[i][0]
-        arraystr += '</td><td>'
-        arraystr += float2price(purchaselist[i][1])
-        arraystr += '</td><td>'
-        //arraystr += purchaselist[i][3].toLocaleDateString('fi')
-        arraystr += date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear().toString().substr(2,2)
-        arraystr += '</td><td>'
-        arraystr += '<button id="rb' + i + '" data-indice="' + i + '" class="rmitembutton">del</button>'
-        arraystr += '</tr>'
-    }
-    arraystr += '</table>'
-    document.getElementById('datalist').innerHTML = arraystr
-    
-    // add click-function to each remove-button
-    for (var i=0;i<purchaselist.length;i++){
-      document.getElementById('rb'+i).addEventListener('click', (event) => {
-        var indice = parseInt(event.target.getAttribute('data-indice'))
-        purchaselist.splice(indice, 1)
-        updateView(dnow.getFullYear())
-        localStorage.setItem('ctdata', JSON.stringify(purchaselist))
-      })
+        var tr = add_row('purchases_table', colors[category], [purchaselist[i][0], float2price(purchaselist[i][1]), 
+                                                               date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear().toString().substr(2,2)])
+
+        // create deletebutton to the end of the row
+        var rmbut = document.createElement('button')
+        rmbut.setAttribute('id', 'rb' + i )
+        rmbut.setAttribute('data-indice',  i)
+        rmbut.setAttribute('class', 'rmitembutton')
+        rmbut.innerHTML = 'del'
+        rmbut.addEventListener('click', (event) => {
+          // deletebutton callback
+          var indice = parseInt(event.target.getAttribute('data-indice'))
+          purchaselist.splice(indice, 1)
+          updateView(dnow.getFullYear())
+          localStorage.setItem('ctdata', JSON.stringify(purchaselist))
+        })
+
+        // add deletebutton
+        tr.appendChild(rmbut)
     }
   }
 
