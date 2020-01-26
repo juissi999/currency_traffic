@@ -24,13 +24,13 @@ See index.html on browser
 ## Tests
 
 ### Setup testing framework
-`
-pip install robotframework
-pip install robotframework-seleniumlibrary
-pip install webdrivermanager
-webdrivermanager firefox
-mkdir test/reports
-`
+
+    pip install robotframework
+    pip install robotframework-seleniumlibrary
+    pip install webdrivermanager
+    webdrivermanager firefox
+    mkdir test/reports
+
 
 ### Run tests
 
