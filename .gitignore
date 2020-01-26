@@ -108,3 +108,6 @@ db/
 
 # package-lock
 package-lock.json
+
+# reports folder
+test/reports/

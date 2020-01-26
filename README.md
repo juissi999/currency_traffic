@@ -20,3 +20,23 @@ Build site by typing
 `npm run build`
 
 See index.html on browser
+
+## Tests
+
+### Setup testing framework
+`
+pip install robotframework
+pip install robotframework-seleniumlibrary
+pip install webdrivermanager
+webdrivermanager firefox
+mkdir test/reports
+`
+
+### Run tests
+
+Setup a server on localhost on port 80
+Run tests by typing in root directory
+
+`
+robot -d test/reports test/tests.robot
+`
