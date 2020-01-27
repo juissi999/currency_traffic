@@ -37,4 +37,4 @@ See index.html on browser
 Setup a server on localhost on port 80
 Run tests in root directory by typing
 
-    robot -d test/reports test/tests.robot
+    npm test
