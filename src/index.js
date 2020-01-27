@@ -304,7 +304,7 @@ function currency_traffic (canvasid) {
 
         // form categorical spending string
         for (var i=0;i<categories.length;i++){
-          add_row('stats_table', '', [categories[i], float2price(categoryspendings_thism[i]), float2price(categoryspendings[i])])
+          add_row('stats_table', colors[i], [categories[i], float2price(categoryspendings_thism[i]), float2price(categoryspendings[i])])
         }
     } else {
         document.getElementById('chart1').innerHTML = ''

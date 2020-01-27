@@ -1,5 +1,6 @@
 *** Settings ***
-Documentation     Simple example using SeleniumLibrary.
+Documentation     Simple tests using SeleniumLibrary.
+...               Tests currency_traffic UI.
 Library           SeleniumLibrary
 Suite Setup       setup_actions
 Suite Teardown    Close Browser
@@ -9,15 +10,22 @@ setup_actions
   Open Browser  ${URL}  ${BROWSER}
   Maximize Browser Window
 
+addproduct
+  [Arguments]  ${name}  ${price}
+  Input Text  id=${#PURCH}  ${name}
+  Input Text  id=${#PRICE}  ${price}
+  Click Element  id=${#ADDB}
 
 *** Variables ***
-${URL}  http://localhost
-${BROWSER}  Firefox
-${#B}  cleardatab
-${#BW}  cleardata_wrapper
-${#PURCH}  purchase
-${#PRICE}  price
-${#ADDB}  addbutton
+${URL}            http://localhost
+${BROWSER}        Firefox
+${#B}             cleardatab
+${#BW}            cleardata_wrapper
+${#PURCH}         purchase
+${#PRICE}         price
+${#ADDB}          addbutton
+${TESTPURCHASE}   testpurchase
+${#DELALLB}       data_final_rmb
 
 *** Test Cases ***
 Open Browser And Go To Page 
@@ -28,15 +36,29 @@ Test hide and show div
   Click Element  id=${#B}
   Element Should Be Visible  id=${#BW}
 
-Test add product
+Test show add product
+  [Documentation]  Test add product. Use row's deletebuttons id and
+  ...              testpurchases name as validator.
   Page Should Not Contain Element  id=rb0
-  Input Text  id=${#PURCH}  test
-  Input Text  id=${#PRICE}  15
-  Click Element  id=${#ADDB}
+  Page Should Not Contain  ${TESTPURCHASE}
+  addproduct  ${TESTPURCHASE}  15
   Page Should Contain Element  id=rb0
+  Page Should Contain  ${TESTPURCHASE}
 
-Test remove product
+Test remove a product with delbutton
+  [Documentation]  Test open purchaselist, product being there and removing
+  ...              product. Use row's deletebutton id as a validator.
+  ...              TODO work out better validator. (button has indexed-id)
   Click Element  id=purchaselistb
   Page Should Contain Element  id=rb0
   Click Element  id=rb0
+  Page Should Not Contain Element  id=rb0
+
+Test delete all button
+  [Documentation]  Test calculations for new product.
+  addproduct  test1  15
+  addproduct  test2  14.33
+  addproduct  test3  1224,3399999
+  Page Should Contain Element  id=rb0
+  Click Element  id=${#DELALLB}
   Page Should Not Contain Element  id=rb0

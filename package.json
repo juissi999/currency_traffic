@@ -1,7 +1,7 @@
 {
   "name": "currency_traffic",
   "version": "0.0.0",
-  "description": "A tool for following money spending\u001b\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D",
+  "description": "A tool for following money spending",
   "main": "index.html",
   "scripts": {
     "test": "robot -d test/reports test/tests.robot",
@@ -22,8 +22,7 @@
   },
   "homepage": "https://github.com/juissi999/currency_traffic#readme",
   "dependencies": {
-    "d3": "^5.15.0",
-    "jquery": "^3.4.1"
+    "d3": "^5.15.0"
   },
   "devDependencies": {
     "webpack": "^4.41.5",

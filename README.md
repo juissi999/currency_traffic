@@ -23,7 +23,7 @@ See index.html on browser
 
 ## Tests
 
-### Setup testing framework
+#### Setup testing framework
 
     pip install robotframework
     pip install robotframework-seleniumlibrary
@@ -31,10 +31,10 @@ See index.html on browser
     webdrivermanager firefox
     mkdir test/reports
 
-
-### Run tests
+#### Run tests
 
 Setup a server on localhost on port 80
+
 Run tests in root directory by typing
 
     npm test
