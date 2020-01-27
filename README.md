@@ -9,15 +9,15 @@ https://juissi999.github.io/currency_traffic/
 
 Download repository by typing
 
-`git clone https://github.com/juissi999/currency_traffic.git`
+    git clone https://github.com/juissi999/currency_traffic.git
 
 Install dependencies by typing
 
-`npm install`
+    npm install
 
 Build site by typing
 
-`npm run build`
+    npm run build
 
 See index.html on browser
 
@@ -35,8 +35,6 @@ See index.html on browser
 ### Run tests
 
 Setup a server on localhost on port 80
-Run tests by typing in root directory
+Run tests in root directory by typing
 
-`
-robot -d test/reports test/tests.robot
-`
+    robot -d test/reports test/tests.robot
