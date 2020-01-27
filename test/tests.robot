@@ -26,17 +26,28 @@ ${#PRICE}         price
 ${#ADDB}          addbutton
 ${TESTPURCHASE}   testpurchase
 ${#DELALLB}       data_final_rmb
+@{PRICES}         1  14.33  1224,3399999
+@{falseprices}    abc  ${EMPTY}  aturäsdfölkjerlkjsfsöjlsdflje
 
 *** Test Cases ***
-Open Browser And Go To Page 
+Page contains title
   Page Should Contain  Currency traffic
   
-Test hide and show div
+Hide and show sections
   Element Should Not Be Visible  id=${#BW}
   Click Element  id=${#B}
   Element Should Be Visible  id=${#BW}
 
-Test show add product
+Changing category
+  [Documentation]  Test changing of category works.
+  ...              Multiple classes handled now with only simple string.
+  Element Attribute Value Should Be  xpath://button[@data-category="0"]  class  categorybutton selected
+  Click Element  xpath://button[@data-category="3"]
+  Element Attribute Value Should Be  xpath://button[@data-category="0"]  class  categorybutton
+  Element Attribute Value Should Be  xpath://button[@data-category="3"]  class  categorybutton selected
+  Click Element  xpath://button[@data-category="0"]
+
+Adding a product shows on list
   [Documentation]  Test add product. Use row's deletebuttons id and
   ...              testpurchases name as validator.
   Page Should Not Contain Element  id=rb0
@@ -45,7 +56,7 @@ Test show add product
   Page Should Contain Element  id=rb0
   Page Should Contain  ${TESTPURCHASE}
 
-Test remove a product with delbutton
+Remove a product with delbutton
   [Documentation]  Test open purchaselist, product being there and removing
   ...              product. Use row's deletebutton id as a validator.
   ...              TODO work out better validator. (button has indexed-id)
@@ -54,11 +65,18 @@ Test remove a product with delbutton
   Click Element  id=rb0
   Page Should Not Contain Element  id=rb0
 
-Test delete all button
+Delete all button
   [Documentation]  Test calculations for new product.
-  addproduct  test1  15
-  addproduct  test2  14.33
-  addproduct  test3  1224,3399999
+  FOR  ${ELEMENT}  IN  @{PRICES}
+      addproduct  test  ${ELEMENT}
+  END
   Page Should Contain Element  id=rb0
   Click Element  id=${#DELALLB}
+  Page Should Not Contain Element  id=rb0
+
+Not able to add product with zero price or alphabet price
+  Page Should Not Contain Element  id=rb0
+  FOR  ${ELEMENT}  IN  @{falseprices}
+    addproduct  test  ${ELEMENT}
+  END
   Page Should Not Contain Element  id=rb0
