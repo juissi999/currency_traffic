@@ -45,4 +45,4 @@ python2.7:
 
 Run tests in root directory by typing
 
-    npm test
+    npm robot
