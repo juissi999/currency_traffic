@@ -33,7 +33,15 @@ See index.html on browser
 
 #### Run tests
 
-Setup a server on localhost on port 80
+Setup a server on localhost on port 80 by typing on command line
+
+python3:
+
+    python -m http.server 80
+
+python2.7:
+
+    python -m SimpleHTTPServer 80
 
 Run tests in root directory by typing
 

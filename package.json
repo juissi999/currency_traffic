@@ -6,7 +6,8 @@
   "scripts": {
     "test": "robot -d test/reports test/tests.robot",
     "start":"webpack --watch",
-    "build": "webpack"
+    "build": "webpack",
+    "robot": "npm run build && npm run test"
   },
   "repository": {
     "type": "git",
